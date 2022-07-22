@@ -33,11 +33,11 @@ fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
 
 fn interactive_audio(input: Res<Input<KeyCode>>, dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
     if input.just_pressed(KeyCode::S) {
-        audio.play_looped(dsp_assets.graph(sine_wave));
+        audio.play_looped(dsp_assets.graph(&sine_wave));
     }
 
     if input.just_pressed(KeyCode::T) {
-        audio.play_looped(dsp_assets.graph(triangle_wave));
+        audio.play_looped(dsp_assets.graph(&triangle_wave));
     }
 
     if input.just_pressed(KeyCode::P) {
