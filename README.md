@@ -13,8 +13,6 @@ A third party Bevy plugin that integrates [FunDSP] into [Bevy]. This requires [`
 Remember to lower the volume by passing the settings with `DspManager::add_graph_with_settings`
 or multiplying your DSP graph with a low constant (lower than 1.0).
 
-Currently this does not integrate with `bevy_audio`.
-
 ## Usage
 
 ```rust no_run
