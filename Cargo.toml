@@ -1,0 +1,32 @@
+[package]
+name = "bevy_fundsp"
+authors = ["Gio Genre De Asis"]
+version = "0.1.0"
+edition = "2021"
+description = "A Bevy plugin that integrates FunDSP into Bevy."
+repository = "https://github.com/harudagondi/bevy_fundsp"
+license = "MIT OR Apache-2.0"
+keywords = ["bevy", "fundsp", "audio", "gamedev", "dsp"]
+categories = ["game-development", "multimedia::audio"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+fundsp = { git = "https://github.com/SamiPerttu/fundsp.git" }
+kira = { version = "0.6", default-features = false, features = ["wav"] }
+bevy_kira_audio = { git = "https://github.com/NiklasEi/bevy_kira_audio.git", branch = "bevy_main" }
+bevy = { git = "https://github.com/bevyengine/bevy", default-features = false }
+
+[dev-dependencies.bevy]
+git = "https://github.com/bevyengine/bevy"
+default-features = false
+features = [
+  "render",
+  "animation",
+  "bevy_winit",
+  "bevy_gilrs",
+  "png",
+  "hdr",
+  "filesystem_watcher",
+  "x11"
+]
