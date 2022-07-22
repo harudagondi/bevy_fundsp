@@ -2,7 +2,7 @@
 
 [![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking) [![CI](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml/badge.svg)](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml)
 
-A third party Bevy plugin that integrates [FunDSP] into [Bevy]. This requires [`bevy_kira_audio`]. 
+A third party Bevy plugin that integrates [FunDSP] into [Bevy].
 
 [FunDSP]: https://github.com/SamiPerttu/fundsp
 [Bevy]: https://github.com/bevyengine/bevy
