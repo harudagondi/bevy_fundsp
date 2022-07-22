@@ -41,12 +41,12 @@ fn white_noise() -> impl AudioUnit32 {
     white() >> split::<U2>() * 0.2
 }
 
-fn init_dsp(mut dsp_manager: NonSendMut<DspManager>) {
+fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
     dsp_manager.add_graph(white_noise, 30.0); // length is in seconds
 }
 
 fn play_noise(dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
-    let white_noise = dsp_assets.get_graph(white_noise).unwrap();
+    let white_noise = dsp_assets.graph(white_noise);
     audio.play_looped(white_noise.clone());
 }
 
