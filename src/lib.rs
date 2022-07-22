@@ -32,8 +32,9 @@ use std::{
 };
 
 use bevy::{
-    prelude::{App, Plugin, Res, Commands, ResMut, StartupStage, SystemStage, StageLabel},
-    utils::HashMap, asset::{Assets, Handle},
+    asset::{Assets, Handle},
+    prelude::{App, Commands, Plugin, Res, ResMut, StageLabel, StartupStage, SystemStage},
+    utils::HashMap,
 };
 use bevy_kira_audio::AudioSource;
 pub use fundsp::hacker32;
@@ -223,10 +224,7 @@ impl DspManager {
     /// # Panics
     ///
     /// This panics if the [`DspSource`] cannot be converted to a `kira` sound data.
-    pub fn add_assets(
-        &self,
-        assets: &mut Assets<AudioSource>,
-    ) -> DspAssets {
+    pub fn add_assets(&self, assets: &mut Assets<AudioSource>) -> DspAssets {
         let handles = self
             .graphs
             .iter()
@@ -271,10 +269,7 @@ impl DspAssets {
     }
 
     /// Get a handle to the audio source from the assets.
-    pub fn get_graph<X, F>(
-        &self,
-        f: F,
-    ) -> Option<&Handle<AudioSource>>
+    pub fn get_graph<X, F>(&self, f: F) -> Option<&Handle<AudioSource>>
     where
         X: AudioUnit32 + 'static,
         F: Fn() -> X + 'static,
@@ -287,13 +282,9 @@ impl DspAssets {
     /// # Panics
     ///
     /// This panics when the given function is not found in the assets map.
-    pub fn graph<X, F>(&self, f: F) -> Handle<AudioSource>
-    where
-        X: AudioUnit32 + 'static,
-        F: Fn() -> X + 'static,
-    {
+    pub fn graph<F: FnDspGraph>(&self, f: &F) -> Handle<AudioSource> {
         self.handles
-            .get(&Any::type_id(&f))
+            .get(&Any::type_id(f))
             .unwrap_or_else(|| {
                 panic!(
                     "DSP asset does not exist with the key {:?}.",
