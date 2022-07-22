@@ -1,6 +1,6 @@
 # Bevy FunDSP
 
-[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking) [![Continuous integration](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml/badge.svg)](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml)
+[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking) [![CI](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml/badge.svg)](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml)
 
 A third party Bevy plugin that integrates [FunDSP] into [Bevy]. This requires [`bevy_kira_audio`]. 
 
@@ -20,14 +20,12 @@ Currently this does not integrate with `bevy_audio`.
 ```rust no_run
 #![allow(clippy::precedence)]
 
-use bevy::prelude::*;
 use bevy_fundsp::prelude::*;
-use bevy_kira_audio::*;
+use bevy::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin)
         .add_plugin(DspPlugin)
         .add_startup_system(init_dsp)
         .add_startup_system_to_stage(
@@ -47,7 +45,7 @@ fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
 
 fn play_noise(dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
     let white_noise = dsp_assets.graph(&white_noise);
-    audio.play_looped(white_noise.clone());
+    audio.play(white_noise.clone());
 }
 
 ```

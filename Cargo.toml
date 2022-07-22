@@ -4,6 +4,7 @@ authors = ["Gio Genre De Asis"]
 version = "0.0.1"
 edition = "2021"
 description = "A Bevy plugin that integrates FunDSP into Bevy."
+homepage = "https://github.com/harudagondi/bevy_fundsp"
 repository = "https://github.com/harudagondi/bevy_fundsp"
 license = "MIT OR Apache-2.0"
 keywords = ["bevy", "fundsp", "audio", "gamedev", "dsp"]
@@ -13,7 +14,7 @@ categories = ["game-development", "multimedia::audio"]
 
 [dependencies]
 fundsp = { git = "https://github.com/SamiPerttu/fundsp.git" }
-kira = { version = "0.6", default-features = false, features = ["wav"] }
+kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
 bevy = { git = "https://github.com/bevyengine/bevy", default-features = false }
 
 [dependencies.bevy_kira_audio]
@@ -21,6 +22,12 @@ git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 branch = "bevy_main"
 default-features = false
 features = ["wav"]
+optional = true
+
+[features]
+default = ["bevy_audio"]
+kira = ["dep:kira", "bevy_kira_audio"]
+bevy_audio = ["bevy/bevy_audio", "bevy/wav"]
 
 [dev-dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"
@@ -35,3 +42,25 @@ features = [
   "filesystem_watcher",
   "x11"
 ]
+
+[[example]]
+name = "noise"
+path = "examples/bevy_audio/noise.rs"
+required-features = ["bevy_audio"]
+
+
+[[example]]
+name = "interactive"
+path = "examples/bevy_audio/interactive.rs"
+required-features = ["bevy_audio"]
+
+[[example]]
+name = "kira_noise"
+path = "examples/kira/noise.rs"
+required-features = ["kira"]
+
+
+[[example]]
+name = "kira_interactive"
+path = "examples/kira/interactive.rs"
+required-features = ["kira"]

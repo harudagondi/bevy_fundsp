@@ -26,19 +26,25 @@
 //!
 //! [`FunDSP` README]: https://github.com/SamiPerttu/fundsp
 
-use std::{
-    any::{type_name, Any, TypeId},
-    io::Cursor,
-};
+#[cfg(all(feature = "bevy_audio", feature = "kira"))]
+compile_error!("feature \"bevy_audio\" and feature \"kira\" cannot be enabled at the same time");
 
+use std::any::{type_name, Any, TypeId};
+#[cfg(feature = "kira")]
+use std::io::Cursor;
+
+#[cfg(feature = "bevy_audio")]
+use bevy::audio::AudioSource;
 use bevy::{
     asset::{Assets, Handle},
     prelude::{App, Commands, Plugin, Res, ResMut, StageLabel, StartupStage, SystemStage},
     utils::HashMap,
 };
+#[cfg(feature = "kira")]
 use bevy_kira_audio::AudioSource;
 pub use fundsp::hacker32;
 use fundsp::hacker32::{AudioUnit32, Wave32};
+#[cfg(feature = "kira")]
 use kira::sound::{
     static_sound::{StaticSoundData, StaticSoundSettings},
     FromFileError,
@@ -71,7 +77,7 @@ impl DspSource {
     ///
     /// This panics when it cannot write the DSP graph to a wave buffer.
     #[must_use]
-    pub fn generate_raw_bytes(mut self, sample_rate: f64) -> Cursor<Vec<u8>> {
+    pub fn generate_raw_bytes(mut self, sample_rate: f64) -> Vec<u8> {
         let wave = Wave32::render(sample_rate, self.length, self.graph.as_mut());
 
         let mut buffer = Vec::new();
@@ -79,7 +85,7 @@ impl DspSource {
         wave.write_wav16(&mut buffer)
             .unwrap_or_else(|err| panic!("Cannot write wave to buffer. Error: {err:?}"));
 
-        Cursor::new(buffer)
+        buffer
     }
 
     /// Returns a [`StaticSoundData`].
@@ -91,6 +97,7 @@ impl DspSource {
     /// # Errors
     ///
     /// This will return an error if the DSP graph cannot be parsed into a `StaticSoundData`.
+    #[cfg(feature = "kira")]
     pub fn into_kira_sound_data(
         self,
         sample_rate: f64,
@@ -98,7 +105,33 @@ impl DspSource {
     ) -> Result<StaticSoundData, FromFileError> {
         let raw_bytes = self.generate_raw_bytes(sample_rate);
 
-        StaticSoundData::from_cursor(raw_bytes, settings)
+        StaticSoundData::from_cursor(Cursor::new(raw_bytes), settings)
+    }
+
+    /// Convert this to an audio source.
+    #[must_use]
+    #[cfg(feature = "bevy_audio")]
+    pub fn into_audio_source(self, sample_rate: f64) -> AudioSource {
+        let bytes: std::sync::Arc<[u8]> = self.generate_raw_bytes(sample_rate).into();
+
+        AudioSource { bytes }
+    }
+
+    /// Convert this to an audio source.
+    ///
+    /// # Panics
+    ///
+    /// This can panic when `kira` is enabled and the source cannot be converted to a `StaticSoundData`
+    #[must_use]
+    #[cfg(feature = "kira")]
+    pub fn into_audio_source(self, sample_rate: f64, settings: Settings) -> AudioSource {
+        let sound = self
+            .into_kira_sound_data(sample_rate, settings)
+            .unwrap_or_else(|err| {
+                panic!("Cannot convert DSP source to sound data. Error: {err:?}")
+            });
+
+        AudioSource { sound }
     }
 }
 
@@ -118,11 +151,17 @@ where
     }
 }
 
+#[cfg(not(feature = "kira"))]
+type Settings = ();
+#[cfg(feature = "kira")]
+type Settings = StaticSoundSettings;
+
 /// A DSP graph struct used in the manager.
 pub struct DspGraph {
     func: Box<dyn FnDspGraph>,
     length: f64,
-    settings: StaticSoundSettings,
+    #[allow(dead_code)]
+    settings: Settings,
 }
 
 impl DspGraph {
@@ -132,17 +171,14 @@ impl DspGraph {
         Self {
             func,
             length,
-            settings: StaticSoundSettings::default(),
+            settings: Settings::default(),
         }
     }
 
     /// Create a new graph from the graph function, its length in seconds, and `kira`'s [`StaticSoundSettings`].
+    #[cfg(feature = "kira")]
     #[must_use]
-    pub fn with_settings(
-        func: Box<dyn FnDspGraph>,
-        length: f64,
-        settings: StaticSoundSettings,
-    ) -> Self {
+    pub fn with_settings(func: Box<dyn FnDspGraph>, length: f64, settings: Settings) -> Self {
         Self {
             func,
             length,
@@ -166,13 +202,11 @@ impl DspManager {
     ///
     /// ```no_run
     /// use bevy_fundsp::prelude::*;
-    /// use bevy_kira_audio::*;
     /// use bevy::prelude::*;
     ///
     /// fn main() {
     ///     App::new()
     ///         .add_plugins(DefaultPlugins)
-    ///         .add_plugin(AudioPlugin)
     ///         .add_plugin(DspPlugin)
     ///         .add_startup_system(init_graph)
     ///         .run();
@@ -193,11 +227,12 @@ impl DspManager {
     }
 
     /// Add a new graph into the manager with the given settings.
+    #[cfg(feature = "kira")]
     pub fn add_graph_with_settings<F: FnDspGraph>(
         &mut self,
         f: F,
         length: f64,
-        settings: StaticSoundSettings,
+        settings: Settings,
     ) -> &mut Self {
         self.graphs.insert(
             TypeId::of::<F>(),
@@ -231,12 +266,12 @@ impl DspManager {
             .map(|(type_id, graph)| {
                 let audio_graph = graph.func.generate_graph();
                 let dsp_source = DspSource::from_boxed(audio_graph, graph.length);
-                let sound = dsp_source
-                    .into_kira_sound_data(self.sample_rate, graph.settings)
-                    .unwrap_or_else(|err| {
-                        panic!("Cannot convert DSP source to sound data. Error: {err:?}")
-                    });
-                let audio_source = AudioSource { sound };
+
+                #[cfg(feature = "bevy_audio")]
+                let audio_source = dsp_source.into_audio_source(self.sample_rate);
+                #[cfg(feature = "kira")]
+                let audio_source = dsp_source.into_audio_source(self.sample_rate, graph.settings);
+
                 let handle = assets.add(audio_source);
                 (*type_id, handle)
             })
@@ -345,5 +380,5 @@ pub mod prelude {
 }
 
 #[doc = include_str!("../README.md")]
-#[cfg(doctest)]
+#[cfg(all(feature = "bevy_audio", doctest))]
 struct DocTestsForReadMe; // Only used for testing code blocks in README.md

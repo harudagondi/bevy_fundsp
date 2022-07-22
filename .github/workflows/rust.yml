@@ -3,8 +3,8 @@ on: [push, pull_request]
 name: Continuous integration
 
 jobs:
-  check:
-    name: Check
+  check_bevy_audio:
+    name: check bevy_audio
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -19,8 +19,8 @@ jobs:
         with:
           command: check
 
-  test:
-    name: Test Suite
+  test_bevy_audio:
+    name: test bevy_audio
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -34,6 +34,40 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: test
+
+  check_kira:
+    name: check bevy_audio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install alsa and udev
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --no-default-features --features kira
+
+  test_kira:
+    name: test bevy_audio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: Install alsa and udev
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --no-default-features --features kira
 
   fmt:
     name: Rustfmt
