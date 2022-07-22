@@ -1,6 +1,6 @@
 # Bevy FunDSP
 
-[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking)
+[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking) [![Continuous integration](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml/badge.svg)](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml)
 
 A third party Bevy plugin that integrates [FunDSP] into [Bevy]. This requires [`bevy_kira_audio`]. 
 
@@ -46,7 +46,7 @@ fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
 }
 
 fn play_noise(dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
-    let white_noise = dsp_assets.graph(white_noise);
+    let white_noise = dsp_assets.graph(&white_noise);
     audio.play_looped(white_noise.clone());
 }
 
