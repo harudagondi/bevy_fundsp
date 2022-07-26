@@ -35,6 +35,8 @@ use std::any::{type_name, Any, TypeId};
 use bevy::audio::AudioSource;
 #[cfg(feature = "kira")]
 use bevy_kira_audio::AudioSource;
+#[cfg(feature = "oddio")]
+use bevy_oddio::AudioSource;
 
 use bevy::{
     asset::{Assets, Handle},
@@ -48,6 +50,9 @@ use fundsp::hacker32::{AudioUnit32, Wave32};
 mod kira_impl;
 #[cfg(feature = "bevy_audio")]
 mod rodio_impl;
+#[cfg(feature = "oddio")]
+mod oddio_impl;
+
 
 /// A source of a DSP graph.
 pub struct DspSource {
@@ -104,7 +109,7 @@ where
     }
 }
 
-#[cfg(feature = "bevy_audio")]
+#[cfg(any(feature = "bevy_audio", feature = "oddio"))]
 type Settings = ();
 #[cfg(feature = "kira")]
 type Settings = kira::sound::static_sound::StaticSoundSettings;
@@ -198,6 +203,8 @@ impl DspManager {
                 let audio_source = dsp_source.into_audio_source(self.sample_rate);
                 #[cfg(feature = "kira")]
                 let audio_source = dsp_source.into_audio_source(self.sample_rate, graph.settings);
+                #[cfg(feature = "oddio")]
+                let audio_source = dsp_source.into_audio_source(self.sample_rate);
 
                 let handle = assets.add(audio_source);
                 (*type_id, handle)

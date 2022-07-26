@@ -15,6 +15,7 @@ categories = ["game-development", "multimedia::audio"]
 [dependencies]
 fundsp = { git = "https://github.com/SamiPerttu/fundsp.git" }
 kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
+bevy_oddio = { git = "https://github.com/harudagondi/bevy_oddio.git", optional = true }
 
 [dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"
