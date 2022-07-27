@@ -1,4 +1,4 @@
-use std::{io::Cursor, any::TypeId};
+use std::{any::TypeId, io::Cursor};
 
 use bevy_kira_audio::AudioSource;
 use kira::sound::{
@@ -6,7 +6,7 @@ use kira::sound::{
     FromFileError,
 };
 
-use crate::{DspSource, Settings, DspGraph, FnDspGraph, DspManager};
+use crate::{DspGraph, DspManager, DspSource, FnDspGraph, Settings};
 
 impl DspSource {
     /// Returns a [`StaticSoundData`].
@@ -20,10 +20,9 @@ impl DspSource {
     /// This will return an error if the DSP graph cannot be parsed into a `StaticSoundData`.
     pub fn into_kira_sound_data(
         self,
-        sample_rate: f64,
         settings: StaticSoundSettings,
     ) -> Result<StaticSoundData, FromFileError> {
-        let raw_bytes = self.generate_raw_bytes(sample_rate);
+        let raw_bytes = self.generate_raw_bytes();
 
         StaticSoundData::from_cursor(Cursor::new(raw_bytes), settings)
     }
@@ -34,12 +33,10 @@ impl DspSource {
     ///
     /// This can panic when `kira` is enabled and the source cannot be converted to a `StaticSoundData`
     #[must_use]
-    pub fn into_audio_source(self, sample_rate: f64, settings: Settings) -> AudioSource {
-        let sound = self
-            .into_kira_sound_data(sample_rate, settings)
-            .unwrap_or_else(|err| {
-                panic!("Cannot convert DSP source to sound data. Error: {err:?}")
-            });
+    pub fn into_audio_source(self, settings: Settings) -> AudioSource {
+        let sound = self.into_kira_sound_data(settings).unwrap_or_else(|err| {
+            panic!("Cannot convert DSP source to sound data. Error: {err:?}")
+        });
 
         AudioSource { sound }
     }

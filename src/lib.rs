@@ -28,8 +28,15 @@
 
 #[cfg(all(feature = "bevy_audio", feature = "kira"))]
 compile_error!("feature \"bevy_audio\" and feature \"kira\" cannot be enabled at the same time");
+#[cfg(all(feature = "kira", feature = "oddio"))]
+compile_error!("feature \"kira\" and feature \"oddio\" cannot be enabled at the same time");
+#[cfg(all(feature = "bevy_audio", feature = "oddio"))]
+compile_error!("feature \"bevy_audio\" and feature \"oddio\" cannot be enabled at the same time");
 
-use std::any::{type_name, Any, TypeId};
+use std::{
+    any::{type_name, Any, TypeId},
+    cell::RefCell,
+};
 
 #[cfg(feature = "bevy_audio")]
 use bevy::audio::AudioSource;
@@ -48,31 +55,36 @@ use fundsp::hacker32::{AudioUnit32, Wave32};
 
 #[cfg(feature = "kira")]
 mod kira_impl;
-#[cfg(feature = "bevy_audio")]
-mod rodio_impl;
 #[cfg(feature = "oddio")]
 mod oddio_impl;
-
+#[cfg(feature = "bevy_audio")]
+mod rodio_impl;
 
 /// A source of a DSP graph.
 pub struct DspSource {
     graph: Box<dyn AudioUnit32>,
+    sample_rate: f64,
     length: f64,
 }
 
 impl DspSource {
     /// Creates a new DSP data source from the given graph.
-    pub fn new<X: AudioUnit32 + 'static>(graph: X, length: f64) -> Self {
+    pub fn new<X: AudioUnit32 + 'static>(graph: X, sample_rate: f64, length: f64) -> Self {
         Self {
             graph: Box::new(graph),
+            sample_rate,
             length,
         }
     }
 
     /// Creates a new DSP data source from a boxed audio unit.
     #[must_use]
-    pub fn from_boxed(graph: Box<dyn AudioUnit32>, length: f64) -> Self {
-        Self { graph, length }
+    pub fn from_boxed(graph: Box<dyn AudioUnit32>, sample_rate: f64, length: f64) -> Self {
+        Self {
+            graph,
+            sample_rate,
+            length,
+        }
     }
 
     /// Generate the raw bytes of a DSP graph given the sample rate and its length.
@@ -81,8 +93,8 @@ impl DspSource {
     ///
     /// This panics when it cannot write the DSP graph to a wave buffer.
     #[must_use]
-    pub fn generate_raw_bytes(mut self, sample_rate: f64) -> Vec<u8> {
-        let wave = Wave32::render(sample_rate, self.length, self.graph.as_mut());
+    pub fn generate_raw_bytes(mut self) -> Vec<u8> {
+        let wave = Wave32::render(self.sample_rate, self.length, self.graph.as_mut());
 
         let mut buffer = Vec::new();
 
@@ -90,6 +102,47 @@ impl DspSource {
             .unwrap_or_else(|err| panic!("Cannot write wave to buffer. Error: {err:?}"));
 
         buffer
+    }
+}
+
+/// A DSP graph used for streaming sound data potientally forever.
+pub struct StreamingDspSource {
+    // Mutex/RwLock blocks, so we use RefCell
+    graph: RefCell<Box<dyn AudioUnit32>>,
+    sample_rate: f64,
+}
+
+impl StreamingDspSource {
+    /// Generate a new [`StreamingDspSource`]
+    #[must_use]
+    pub fn new(graph: Box<dyn AudioUnit32>, sample_rate: f64) -> Self {
+        Self {
+            graph: RefCell::new(graph),
+            sample_rate,
+        }
+    }
+
+    /// Generate the next frame of the graph.
+    pub fn next_frame(&self) -> (f32, f32) {
+        self.graph.borrow_mut().get_stereo()
+    }
+}
+
+impl Iterator for StreamingDspSource {
+    type Item = (f32, f32);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(self.next_frame())
+    }
+}
+
+// This turns [`DspSource`] into a [`StreamingDspSource`] that streams forever.
+impl IntoIterator for DspSource {
+    type Item = (f32, f32);
+    type IntoIter = StreamingDspSource;
+
+    fn into_iter(self) -> Self::IntoIter {
+        StreamingDspSource::new(self.graph, self.sample_rate)
     }
 }
 
@@ -138,7 +191,6 @@ impl DspGraph {
 /// This is automatically added as a resource.
 pub struct DspManager {
     graphs: HashMap<TypeId, DspGraph>,
-    #[allow(dead_code)] // This is only used when `kira` is enabled.
     sample_rate: f64,
 }
 
@@ -181,9 +233,9 @@ impl DspManager {
 
     /// Get a graph from the manager.
     pub fn get_graph<F: FnDspGraph>(&self, f: &F) -> Option<DspSource> {
-        self.graphs
-            .get(&Any::type_id(f))
-            .map(|graph| DspSource::from_boxed(graph.func.generate_graph(), graph.length))
+        self.graphs.get(&Any::type_id(f)).map(|graph| {
+            DspSource::from_boxed(graph.func.generate_graph(), self.sample_rate, graph.length)
+        })
     }
 
     /// Generate asset handles for all DSP graphs.
@@ -197,7 +249,7 @@ impl DspManager {
             .iter()
             .map(|(type_id, graph)| {
                 let audio_graph = graph.func.generate_graph();
-                let dsp_source = DspSource::from_boxed(audio_graph, graph.length);
+                let dsp_source = DspSource::from_boxed(audio_graph, self.sample_rate, graph.length);
 
                 #[cfg(feature = "bevy_audio")]
                 let audio_source = dsp_source.into_audio_source(self.sample_rate);
