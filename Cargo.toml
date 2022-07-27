@@ -32,7 +32,7 @@ features = ["wav"]
 optional = true
 
 [features]
-default = ["bevy_audio"]
+default = ["kira"]
 kira = ["dep:kira", "bevy_kira_audio"]
 bevy_audio = ["bevy/bevy_audio", "bevy/wav"]
 oddio = ["bevy_oddio"]

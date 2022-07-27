@@ -109,6 +109,7 @@ impl DspSource {
 pub struct StreamingDspSource {
     // Mutex/RwLock blocks, so we use RefCell
     graph: RefCell<Box<dyn AudioUnit32>>,
+    #[allow(dead_code)] // This only warn when `bevy_audio` is selected.
     sample_rate: f64,
 }
 
@@ -252,9 +253,9 @@ impl DspManager {
                 let dsp_source = DspSource::from_boxed(audio_graph, self.sample_rate, graph.length);
 
                 #[cfg(feature = "bevy_audio")]
-                let audio_source = dsp_source.into_audio_source(self.sample_rate);
+                let audio_source = dsp_source.into_audio_source();
                 #[cfg(feature = "kira")]
-                let audio_source = dsp_source.into_audio_source(self.sample_rate, graph.settings);
+                let audio_source = dsp_source.into_audio_source(graph.settings);
                 #[cfg(feature = "oddio")]
                 let audio_source = dsp_source.into_audio_source(self.sample_rate);
 
