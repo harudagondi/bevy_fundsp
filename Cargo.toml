@@ -35,7 +35,7 @@ optional = true
 default = ["kira"]
 kira = ["dep:kira", "bevy_kira_audio"]
 bevy_audio = ["bevy/bevy_audio", "bevy/wav"]
-oddio = ["bevy_oddio"]
+# oddio = ["bevy_oddio"]
 
 [dev-dependencies.bevy]
 git = "https://github.com/bevyengine/bevy"
@@ -72,3 +72,8 @@ required-features = ["kira"]
 name = "kira_interactive"
 path = "examples/kira/interactive.rs"
 required-features = ["kira"]
+
+# [[example]]
+# name = "oddio_noise"
+# path = "examples/oddio/noise.rs"
+# required-features = ["oddio"]

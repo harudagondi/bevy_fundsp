@@ -4,13 +4,13 @@ check:
     cargo check
     cargo check --no-default-features --features bevy_audio
     cargo check --no-default-features --features kira
-    cargo check --no-default-features --features oddio
+    # cargo check --no-default-features --features oddio
 
 test:
     cargo test
     cargo test --no-default-features --features bevy_audio
     cargo test --no-default-features --features kira
-    cargo test --no-default-features --features oddio
+    # cargo test --no-default-features --features oddio
 
 fmt:
     cargo fmt --all -- --check
