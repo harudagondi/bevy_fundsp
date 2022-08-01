@@ -4,6 +4,8 @@
 
 A third party Bevy plugin that integrates [FunDSP] into [Bevy].
 
+`bevy_fundsp` supports integration for `bevy_audio` and [`bevy_kira_audio`]. (`bevy_oddio` coming soon!)
+
 [FunDSP]: https://github.com/SamiPerttu/fundsp
 [Bevy]: https://github.com/bevyengine/bevy
 [`bevy_kira_audio`]: https://github.com/NiklasEi/bevy_kira_audio
@@ -53,6 +55,7 @@ fn play_noise(dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
 | `bevy_fundsp` | `bevy` | `bevy_kira_audio`          | `fundsp` |
 | ------------- | ------ | -------------------------- | -------- |
 | main          | main   | main, branch = `bevy_main` | main     |
+| 0.1.0         | 0.8    | 0.11                       | 0.6      |
 
 ## License
 
