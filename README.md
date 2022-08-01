@@ -1,6 +1,6 @@
 # Bevy FunDSP
 
-[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking) [![CI](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml/badge.svg)](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml)
+[![Bevy tracking](https://img.shields.io/badge/Bevy%20tracking-main-lightblue)](https://github.com/bevyengine/bevy/blob/main/docs/plugins_guidelines.md#main-branch-tracking) [![CI](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml/badge.svg)](https://github.com/harudagondi/bevy_fundsp/actions/workflows/rust.yml) ![Crates.io](https://img.shields.io/crates/v/bevy_fundsp) ![Crates.io](https://img.shields.io/crates/l/bevy_fundsp) ![docs.rs](https://img.shields.io/docsrs/bevy_fundsp)
 
 A third party Bevy plugin that integrates [FunDSP] into [Bevy].
 
