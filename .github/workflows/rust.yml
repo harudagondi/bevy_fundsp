@@ -69,39 +69,39 @@ jobs:
           command: test
           args: --no-default-features --features kira
   
-  check_oddio:
-    name: check oddio
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install alsa and udev
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --no-default-features --features oddio
+  # check_oddio:
+  #   name: check oddio
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
+  #     - name: Install alsa and udev
+  #       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: check
+  #         args: --no-default-features --features oddio
 
-  test_oddio:
-    name: test oddio
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install alsa and udev
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --no-default-features --features oddio
+  # test_oddio:
+  #   name: test oddio
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: actions-rs/toolchain@v1
+  #       with:
+  #         profile: minimal
+  #         toolchain: stable
+  #         override: true
+  #     - name: Install alsa and udev
+  #       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+  #     - uses: actions-rs/cargo@v1
+  #       with:
+  #         command: test
+  #         args: --no-default-features --features oddio
 
   fmt:
     name: fmt
