@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::{
     default_sample_rate,
-    dsp_data::DspGraph,
+    dsp_graph::DspGraph,
     dsp_source::{DspSource, SourceType},
 };
 

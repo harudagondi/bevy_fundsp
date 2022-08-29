@@ -69,14 +69,14 @@ impl<Track> DspAudio for AudioChannel<Track> {
     type Sink = bevy_kira_audio::audio::PlayAudioCommand;
     type Settings = ();
 
-    fn play_dsp_source<D: crate::dsp_data::DspGraph>(
+    fn play_dsp_source<D: crate::dsp_graph::DspGraph>(
         &mut self,
         dsp_assets: &crate::dsp_manager::DspAssets,
-        dsp_data: D,
+        dsp_graph: D,
         _settings: Self::Settings,
     ) -> Self::Sink {
         let source = dsp_assets
-            .get_graph(dsp_data)
+            .get_graph(dsp_graph)
             .unwrap_or_else(|| panic!("DSP source not found!"));
 
         self.play(source)

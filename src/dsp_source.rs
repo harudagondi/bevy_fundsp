@@ -1,7 +1,7 @@
 //! Module for [`DspSource`],
 //! a type that is analogous to `AudioSource` in `bevy_audio`.
 
-use crate::dsp_data::DspGraph;
+use crate::dsp_graph::DspGraph;
 use bevy::reflect::TypeUuid;
 use fundsp::{hacker32::AudioUnit32, wave::Wave32};
 use std::{cell::RefCell, sync::Arc};
@@ -41,9 +41,9 @@ pub enum SourceType {
 }
 
 impl DspSource {
-    pub(crate) fn new<D: DspGraph>(dsp_data: D, sample_rate: f32, source_type: SourceType) -> Self {
+    pub(crate) fn new<D: DspGraph>(dsp_graph: D, sample_rate: f32, source_type: SourceType) -> Self {
         Self {
-            dsp_graph: Arc::new(dsp_data),
+            dsp_graph: Arc::new(dsp_graph),
             sample_rate,
             source_type,
         }

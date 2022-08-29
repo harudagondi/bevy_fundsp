@@ -13,13 +13,13 @@
 use backend::{Backend, DefaultBackend};
 use bevy::prelude::{AddAsset, App, Plugin};
 use cpal::traits::{DeviceTrait, HostTrait};
-use dsp_data::DspGraph;
+use dsp_graph::DspGraph;
 use dsp_manager::DspManager;
 use dsp_source::{DspSource, SourceType};
 use std::marker::PhantomData;
 
 pub mod backend;
-pub mod dsp_data;
+pub mod dsp_graph;
 pub mod dsp_manager;
 pub mod dsp_source;
 
@@ -103,7 +103,7 @@ fn default_sample_rate() -> f32 {
 /// Prelude for all `bevy_fundsp` types.
 pub mod prelude {
     pub use crate::backend::{Backend, DspAudioExt};
-    pub use crate::dsp_data::DspGraph;
+    pub use crate::dsp_graph::DspGraph;
     pub use crate::dsp_manager::DspManager;
     pub use crate::dsp_source::{DspSource, Iter, IterMono, SourceType};
     pub use crate::DspAppExt;
