@@ -100,6 +100,18 @@ fn default_sample_rate() -> f32 {
     }
 }
 
+/// Prelude for all `bevy_fundsp` types.
+pub mod prelude {
+    pub use crate::backend::{Backend, DspAudioExt};
+    pub use crate::dsp_data::DspGraph;
+    pub use crate::dsp_manager::DspManager;
+    pub use crate::dsp_source::{DspSource, Iter, IterMono, SourceType};
+    pub use crate::DspPlugin;
+    pub use crate::DspAppExt;
+}
+
+pub use prelude::*;
+
 #[doc = include_str!("../README.md")]
 #[cfg(all(feature = "bevy_audio", doctest))]
 struct DocTestsForReadMe; // Only used for testing code blocks in README.md
