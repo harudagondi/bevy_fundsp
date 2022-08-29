@@ -110,8 +110,6 @@ pub mod prelude {
     pub use crate::DspPlugin;
 }
 
-pub use prelude::*;
-
 #[doc = include_str!("../README.md")]
 #[cfg(all(feature = "bevy_audio", doctest))]
 struct DocTestsForReadMe; // Only used for testing code blocks in README.md
