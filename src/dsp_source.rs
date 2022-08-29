@@ -7,7 +7,7 @@ use fundsp::{hacker32::AudioUnit32, wave::Wave32};
 use std::{cell::RefCell, sync::Arc};
 
 /// A DSP source similar to `AudioSource` in `bevy_audio`.
-/// 
+///
 /// These can be played directly when the [`SourceType`] is dynamic,
 /// otherwise, the DSP source must be played with a given duration.
 #[derive(TypeUuid, Clone)]
@@ -25,17 +25,17 @@ pub enum SourceType {
     /// This means that the playing sound is simply a collection of bytes.
     /// Therefore, the audio is of definite length,
     /// and the sound last for the given duration.
-    /// 
+    ///
     /// See [`Wave32`](fundsp::wave::Wave32) on how this is converted.
-    Static { 
+    Static {
         /// The duration of the source in seconds.
-        duration: f32 
+        duration: f32,
     },
     /// Indicates that the DSP source is dynamic.
     /// This means that the playing sound last forever.
     /// Internally, each frame is computed manually,
     /// and not referenced from an internal collection of bytes.
-    /// 
+    ///
     /// See [`Iter`].
     Dynamic,
 }
@@ -57,7 +57,11 @@ impl DspSource {
 
         let mut node = self.dsp_graph.generate_graph();
 
-        let wave = Wave32::render(f64::from(self.sample_rate), f64::from(duration), node.as_mut());
+        let wave = Wave32::render(
+            f64::from(self.sample_rate),
+            f64::from(duration),
+            node.as_mut(),
+        );
 
         let mut buffer = Vec::new();
 
@@ -82,7 +86,7 @@ impl IntoIterator for DspSource {
 
 /// An iterator of the DSP source
 /// whose item is a stereo sample.
-/// 
+///
 /// This is infinite, and would never return `None`.
 pub struct Iter {
     pub(crate) sample_rate: f32,
@@ -134,7 +138,7 @@ impl Iterator for Iter {
 
 /// An iterator that returns mono samples.
 /// This is similar to [`Iter`].
-/// 
+///
 /// Internally, only `bevy_audio` uses this.
 pub struct IterMono(pub(crate) Iter);
 

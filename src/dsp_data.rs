@@ -4,22 +4,22 @@ use fundsp::prelude::AudioUnit32;
 use uuid::Uuid;
 
 /// Trait for generating DSP sources.
-/// 
+///
 /// This is the public interface for registering custom DSP graphs.
-/// 
+///
 /// Currently, this is only implemented for functions
 /// that implement `Fn() -> impl AudioUnit32`.
-/// 
+///
 /// If parameterless functions isn't enough for your usecase,
 /// you can implement your own custom type.
 pub trait DspGraph: Send + Sync + 'static {
     /// The ID of the given graph.
-    /// 
+    ///
     /// Different graphs must return different IDs,
     /// even if they return the same type.
-    /// 
+    ///
     /// This is used internally in [`DspManager`].
-    /// 
+    ///
     /// [`DspManager`]: crate::dsp_manager::DspManager
     fn id(&self) -> Uuid;
 

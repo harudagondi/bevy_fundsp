@@ -13,7 +13,7 @@ use crate::{
 };
 
 /// Manages the registered DSP sources.
-/// 
+///
 /// This is a public facing interface
 /// for the user to access the stored DSP sources.
 #[derive(Resource)]
