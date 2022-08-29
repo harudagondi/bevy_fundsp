@@ -36,7 +36,7 @@ pub enum SourceType {
     /// Internally, each frame is computed manually,
     /// and not referenced from an internal collection of bytes.
     /// 
-    /// See [`DspSourceIter`].
+    /// See [`Iter`].
     Dynamic,
 }
 
@@ -133,7 +133,7 @@ impl Iterator for Iter {
 }
 
 /// An iterator that returns mono samples.
-/// This is similar to [`DspSourceIter`].
+/// This is similar to [`Iter`].
 /// 
 /// Internally, only `bevy_audio` uses this.
 pub struct IterMono(pub(crate) Iter);
