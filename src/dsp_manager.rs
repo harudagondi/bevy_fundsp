@@ -47,6 +47,7 @@ impl DspManager {
     }
 
     /// Get the DSP source given a DSP graph.
+    #[allow(clippy::needless_pass_by_value)]
     pub fn get_graph<D: DspGraph>(&self, dsp_graph: D) -> Option<&DspSource> {
         self.collection.get(&dsp_graph.id())
     }

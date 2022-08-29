@@ -13,6 +13,7 @@ pub mod bevy_audio;
 // pub mod oddio;
 
 /// The default backend.
+#[allow(clippy::module_name_repetitions)]
 #[cfg(feature = "bevy_audio")]
 pub type DefaultBackend = bevy_audio::BevyAudioBackend;
 /// The default backend.

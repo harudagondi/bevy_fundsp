@@ -52,12 +52,12 @@ impl DspSource {
     pub(crate) fn to_bytes(&self) -> Vec<u8> {
         let duration = match self.source_type {
             SourceType::Static { duration } => duration,
-            _ => panic!("Only static DSP sources can be converted into bytes."),
+            SourceType::Dynamic => panic!("Only static DSP sources can be converted into bytes."),
         };
 
         let mut node = self.dsp_graph.generate_graph();
 
-        let wave = Wave32::render(self.sample_rate as f64, duration as f64, node.as_mut());
+        let wave = Wave32::render(f64::from(self.sample_rate), f64::from(duration), node.as_mut());
 
         let mut buffer = Vec::new();
 
@@ -70,10 +70,10 @@ impl DspSource {
 
 impl IntoIterator for DspSource {
     type Item = [f32; 2];
-    type IntoIter = DspSourceIter;
+    type IntoIter = Iter;
 
     fn into_iter(self) -> Self::IntoIter {
-        DspSourceIter {
+        Iter {
             sample_rate: self.sample_rate,
             audio_unit: RefCell::new(self.dsp_graph.generate_graph()),
         }
@@ -84,7 +84,7 @@ impl IntoIterator for DspSource {
 /// whose item is a stereo sample.
 /// 
 /// This is infinite, and would never return `None`.
-pub struct DspSourceIter {
+pub struct Iter {
     pub(crate) sample_rate: f32,
     audio_unit: RefCell<Box<dyn AudioUnit32>>,
 }
@@ -95,6 +95,7 @@ pub(crate) trait Source {
     fn sample_rate(&self) -> f32;
     fn sample(&self) -> Self::Frame;
 
+    #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
     fn advance(&self, dt: f32) {
         for _ in 0..(self.sample_rate() * dt) as usize {
             self.sample();
@@ -102,15 +103,15 @@ pub(crate) trait Source {
     }
 }
 
-impl DspSourceIter {
+impl Iter {
     /// Convert the iterator into a different iterator
     /// that returns mono samples.
-    pub fn into_mono(self) -> DspSourceIterMono {
-        DspSourceIterMono(self)
+    pub fn into_mono(self) -> IterMono {
+        IterMono(self)
     }
 }
 
-impl Source for DspSourceIter {
+impl Source for Iter {
     type Frame = [f32; 2];
 
     fn sample_rate(&self) -> f32 {
@@ -123,7 +124,7 @@ impl Source for DspSourceIter {
     }
 }
 
-impl Iterator for DspSourceIter {
+impl Iterator for Iter {
     type Item = [f32; 2];
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -135,9 +136,9 @@ impl Iterator for DspSourceIter {
 /// This is similar to [`DspSourceIter`].
 /// 
 /// Internally, only `bevy_audio` uses this.
-pub struct DspSourceIterMono(pub(crate) DspSourceIter);
+pub struct IterMono(pub(crate) Iter);
 
-impl Source for DspSourceIterMono {
+impl Source for IterMono {
     type Frame = f32;
 
     fn sample_rate(&self) -> f32 {
@@ -149,7 +150,7 @@ impl Source for DspSourceIterMono {
     }
 }
 
-impl Iterator for DspSourceIterMono {
+impl Iterator for IterMono {
     type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {

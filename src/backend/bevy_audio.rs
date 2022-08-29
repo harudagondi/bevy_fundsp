@@ -1,6 +1,6 @@
 //! Implementation to integrate `bevy_fundsp` into `bevy_audio`.
 
-use crate::dsp_source::{DspSource, DspSourceIterMono};
+use crate::dsp_source::{DspSource, IterMono};
 use bevy::{
     audio::{play_queued_audio_system, AudioSink},
     prelude::{
@@ -13,10 +13,11 @@ use std::any::Any;
 use super::{Backend, DspAudioExt};
 
 /// The backend for `bevy_audio`.
+#[allow(clippy::module_name_repetitions)]
 pub struct BevyAudioBackend;
 
 impl Decodable for DspSource {
-    type Decoder = DspSourceIterMono;
+    type Decoder = IterMono;
     type DecoderItem = f32;
 
     fn decoder(&self) -> Self::Decoder {
@@ -24,7 +25,7 @@ impl Decodable for DspSource {
     }
 }
 
-impl rodio::Source for DspSourceIterMono {
+impl rodio::Source for IterMono {
     fn current_frame_len(&self) -> Option<usize> {
         None
     }
@@ -33,6 +34,7 @@ impl rodio::Source for DspSourceIterMono {
         1
     }
 
+    #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
     fn sample_rate(&self) -> u32 {
         self.0.sample_rate as u32
     }
@@ -44,7 +46,7 @@ impl rodio::Source for DspSourceIterMono {
 
 impl Backend for BevyAudioBackend {
     type StaticAudioSource = AudioSource;
-    type DynamicAudioSource = DspSourceIterMono;
+    type DynamicAudioSource = IterMono;
 
     fn init_app(app: &mut App) {
         app.init_resource::<Audio<DspSource>>()

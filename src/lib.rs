@@ -1,9 +1,14 @@
 #![warn(missing_docs)]
 #![warn(missing_doc_code_examples)]
+#![warn(clippy::pedantic)]
+#![allow(clippy::doc_markdown)]
 
 //! This library integrates [FunDSP] into [Bevy].
 //! 
 //! When using this library, **remember to lower your volume first**!
+//! 
+//! [FunDSP]: https://github.com/SamiPerttu/fundsp
+//! [Bevy]: https://bevyengine.org/
 
 use std::marker::PhantomData;
 use backend::{Backend, DefaultBackend};
@@ -35,6 +40,7 @@ impl<B: Backend> DspPlugin<B> {
     /// 
     /// Internally, the default plugin gets the sample rate
     /// of the device using [`cpal`].
+    #[allow(clippy::must_use_candidate)]
     pub fn new(sample_rate: f32) -> Self {
         Self {
             sample_rate,
@@ -88,7 +94,10 @@ fn default_sample_rate() -> f32 {
         .default_output_config()
         .unwrap_or_else(|err| panic!("Cannot find default stream config. Error: {err}"));
 
-    default_config.sample_rate().0 as f32
+    #[allow(clippy::cast_precision_loss)]
+    {
+        default_config.sample_rate().0 as f32
+    }
 }
 
 #[doc = include_str!("../README.md")]
