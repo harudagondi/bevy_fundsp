@@ -1,3 +1,5 @@
+//! Implementation to integrate `bevy_fundsp` into `bevy_audio`.
+
 use crate::dsp_source::{DspSource, DspSourceIterMono};
 use bevy::{
     audio::{play_queued_audio_system, AudioSink},
@@ -10,6 +12,7 @@ use std::any::Any;
 
 use super::{Backend, DspAudioExt};
 
+/// The backend for `bevy_audio`.
 pub struct BevyAudioBackend;
 
 impl Decodable for DspSource {

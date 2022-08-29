@@ -1,5 +1,11 @@
-use std::marker::PhantomData;
+#![warn(missing_docs)]
+#![warn(missing_doc_code_examples)]
 
+//! This library integrates [FunDSP] into [Bevy].
+//! 
+//! When using this library, **remember to lower your volume first**!
+
+use std::marker::PhantomData;
 use backend::{Backend, DefaultBackend};
 use bevy::prelude::{AddAsset, App, Plugin};
 use cpal::traits::{DeviceTrait, HostTrait};
@@ -12,6 +18,7 @@ pub mod dsp_data;
 pub mod dsp_manager;
 pub mod dsp_source;
 
+/// Add support for using [FunDSP graphs] in Bevy code.
 pub struct DspPlugin<B = DefaultBackend>
 where
     B: Backend,
@@ -21,6 +28,13 @@ where
 }
 
 impl<B: Backend> DspPlugin<B> {
+    /// Construct the plugin given the sample rate.
+    /// 
+    /// It is recommended to use the [`Default`]
+    /// implementation to avoid problems with audio output.
+    /// 
+    /// Internally, the default plugin gets the sample rate
+    /// of the device using [`cpal`].
     pub fn new(sample_rate: f32) -> Self {
         Self {
             sample_rate,
@@ -47,15 +61,19 @@ impl<B: Backend> Plugin for DspPlugin<B> {
     }
 }
 
+/// Trait extension for the [`App`] struct.
 pub trait DspAppExt {
-    fn add_dsp_source<D: DspGraph>(&mut self, dsp_data: D, source_type: SourceType) -> &mut Self;
+    /// Register a DSP source with the given [`SourceType`].
+    /// 
+    /// The type to be registered must implement [`DspGraph`].
+    fn add_dsp_source<D: DspGraph>(&mut self, dsp_graph: D, source_type: SourceType) -> &mut Self;
 }
 
 impl DspAppExt for App {
-    fn add_dsp_source<D: DspGraph>(&mut self, dsp_data: D, source_type: SourceType) -> &mut Self {
+    fn add_dsp_source<D: DspGraph>(&mut self, dsp_graph: D, source_type: SourceType) -> &mut Self {
         let mut dsp_manager = self.world.resource_mut::<DspManager>();
 
-        dsp_manager.add_graph(dsp_data, source_type);
+        dsp_manager.add_graph(dsp_graph, source_type);
 
         self
     }
@@ -72,3 +90,7 @@ fn default_sample_rate() -> f32 {
 
     default_config.sample_rate().0 as f32
 }
+
+#[doc = include_str!("../README.md")]
+#[cfg(all(feature = "bevy_audio", doctest))]
+struct DocTestsForReadMe; // Only used for testing code blocks in README.md
