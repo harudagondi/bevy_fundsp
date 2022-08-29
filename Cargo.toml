@@ -12,36 +12,44 @@ categories = ["game-development", "multimedia::audio"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-fundsp = "0.6"
-kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
-# bevy_oddio = { git = "https://github.com/harudagondi/bevy_oddio.git", optional = true }
+[features]
+default = ["bevy_audio"]
+kira = ["dep:kira", "bevy_kira_audio"]
+bevy_audio = ["bevy/bevy_audio", "bevy/wav", "rodio"]
+oddio = ["bevy_oddio"]
 
-atomic = "0.5"
+[dependencies]
+fundsp = "0.8"
+cpal = "0.14"
+rodio = { version = "0.15", default-features = false, features = ["wav"], optional = true }
+kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
+bevy_oddio = { git = "https://github.com/harudagondi/bevy_oddio.git", optional = true }
+
+[dependencies.uuid]
+version = "1.1"
+features = [
+  "v5"
+]
 
 [dependencies.bevy]
-# git = "https://github.com/bevyengine/bevy"
-version = "0.8"
+git = "https://github.com/harudagondi/bevy"
+branch = "remove-sync-in-decoder"
+# version = "0.8"
 default-features = false 
 features = ["bevy_asset"]
 
 [dependencies.bevy_kira_audio]
-# git = "https://github.com/NiklasEi/bevy_kira_audio.git"
+git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-version = "0.11"
+# version = "0.12"
 default-features = false
 features = ["wav"]
 optional = true
 
-[features]
-default = ["bevy_audio"]
-kira = ["dep:kira", "bevy_kira_audio"]
-bevy_audio = ["bevy/bevy_audio", "bevy/wav"]
-# oddio = ["bevy_oddio"]
-
 [dev-dependencies.bevy]
-# git = "https://github.com/bevyengine/bevy"
-version = "0.8"
+git = "https://github.com/harudagondi/bevy"
+branch = "remove-sync-in-decoder"
+# version = "0.8"
 default-features = false
 features = [
   "render",

@@ -1,13 +1,20 @@
 #![allow(clippy::precedence)]
 
 use bevy::prelude::*;
-use bevy_fundsp::prelude::*;
+use bevy_fundsp::{
+    backend::{DefaultBackend, DspAudioExt},
+    dsp_manager::DspManager,
+    dsp_source::SourceType,
+    DspAppExt, DspPlugin,
+};
+use fundsp::hacker32::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin)
-        .add_startup_system(init_dsp)
+        .add_plugin(DspPlugin::<DefaultBackend>::default())
+        .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
+        .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
         .add_system(interactive_audio)
         .run();
 }
@@ -22,19 +29,25 @@ fn triangle_wave() -> impl AudioUnit32 {
     triangle_hz(392.0) >> split::<U2>() * 0.2
 }
 
-fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
-    // length is in seconds
-    dsp_manager
-        .add_graph(sine_wave, 5.0)
-        .add_graph(triangle_wave, 5.0);
-}
-
-fn interactive_audio(input: Res<Input<KeyCode>>, dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
+fn interactive_audio(
+    input: Res<Input<KeyCode>>,
+    mut assets: ResMut<Assets<AudioSource>>,
+    dsp_manager: Res<DspManager>,
+    audio: Res<Audio>,
+) {
     if input.just_pressed(KeyCode::S) {
-        audio.play(dsp_assets.graph(&sine_wave));
+        DspAudioExt::<DefaultBackend>::play_dsp(
+            audio.as_ref(),
+            assets.as_mut(),
+            dsp_manager.get_graph(sine_wave).unwrap(),
+        );
     }
 
     if input.just_pressed(KeyCode::T) {
-        audio.play(dsp_assets.graph(&triangle_wave));
+        DspAudioExt::<DefaultBackend>::play_dsp(
+            audio.as_ref(),
+            assets.as_mut(),
+            dsp_manager.get_graph(triangle_wave).unwrap(),
+        );
     }
 }
