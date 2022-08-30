@@ -24,10 +24,7 @@ pub struct DspManager {
 
 impl Default for DspManager {
     fn default() -> Self {
-        Self {
-            collection: default(),
-            sample_rate: default_sample_rate(),
-        }
+        Self::new(default_sample_rate())
     }
 }
 

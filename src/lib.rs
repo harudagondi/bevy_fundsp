@@ -6,15 +6,15 @@
 //! This library integrates [FunDSP] into [Bevy].
 //!
 //! When using this library, **remember to lower your volume first**!
-//! 
+//!
 //! The following code registers a DSP graph that just generates noise.
-//! 
-//! ```
+//!
+//! ```no_run
 //! #![allow(clippy::precedence)]
-//! 
+//!
 //! use bevy::prelude::*;
-//! use bevy_fundsp::prelude::*;s
-//! 
+//! use bevy_fundsp::prelude::*;
+//!
 //! fn main() {
 //!     App::new()
 //!         .add_plugins(DefaultPlugins)
@@ -23,11 +23,11 @@
 //!         .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
 //!         .run();
 //! }
-//! 
+//!
 //! fn white_noise() -> impl AudioUnit32 {
 //!     white() >> split::<U2>() * 0.2
 //! }
-//! 
+//!
 //! fn play_noise(
 //!     mut assets: ResMut<Assets<DspSource>>,
 //!     dsp_manager: Res<DspManager>,
@@ -39,9 +39,9 @@
 //!     DspAudioExt::<DefaultBackend>::play_dsp(audio.as_ref(), assets.as_mut(), source);
 //! }
 //! ```
-//! 
+//!
 //! When using this library, you may encounter the following error:
-//! 
+//!
 //! ```text no_run
 //! warning: operator precedence can trip the unwary
 //!   --> examples/bevy_audio/noise.rs:22:5
@@ -51,11 +51,11 @@
 //!    |
 //!    = note: `#[warn(clippy::precedence)]` on by default
 //!    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#precedence
-//! 
+//!
 //! warning: `bevy_fundsp` (example "noise") generated 1 warning
 //! ```
-//! 
-//! This isn't necessary when writing your DSP graphs. 
+//!
+//! This isn't necessary when writing your DSP graphs.
 //! It is more intuitive to remove the parentheses when writing these types of expressions,
 //! as FunDSP is essentially a domain specific language.
 //! See the [FunDSP] README for more information.
@@ -69,7 +69,7 @@ use cpal::traits::{DeviceTrait, HostTrait};
 use dsp_graph::DspGraph;
 use dsp_manager::DspManager;
 use dsp_source::{DspSource, SourceType};
-use std::marker::PhantomData;
+use std::{marker::PhantomData, sync::Once};
 
 pub mod backend;
 pub mod dsp_graph;
@@ -77,6 +77,15 @@ pub mod dsp_manager;
 pub mod dsp_source;
 
 /// Add support for using [FunDSP graphs] in Bevy code.
+///
+/// ```no_run
+/// # use bevy::prelude::*;
+/// # use bevy_fundsp::prelude::*;
+/// App::new()
+///     .add_plugins(DefaultPlugins)
+///     .add_plugin(DspPlugin::<DefaultBackend>::default())
+///     .run()
+/// ```
 pub struct DspPlugin<B = DefaultBackend>
 where
     B: Backend,
@@ -93,6 +102,15 @@ impl<B: Backend> DspPlugin<B> {
     ///
     /// Internally, the default plugin gets the sample rate
     /// of the device using [`cpal`].
+    ///
+    /// ```no_run
+    /// # use bevy::prelude::*;
+    /// # use bevy_fundsp::prelude::*;
+    /// App::new()
+    ///     .add_plugins(DefaultPlugins)
+    ///     .add_plugin(DspPlugin::<DefaultBackend>::new(44100.0))
+    ///     .run()
+    /// ```
     #[allow(clippy::must_use_candidate)]
     pub fn new(sample_rate: f32) -> Self {
         Self {
@@ -104,10 +122,7 @@ impl<B: Backend> DspPlugin<B> {
 
 impl<B: Backend> Default for DspPlugin<B> {
     fn default() -> Self {
-        Self {
-            sample_rate: default_sample_rate(),
-            _backend: PhantomData,
-        }
+        Self::new(default_sample_rate())
     }
 }
 
@@ -125,6 +140,20 @@ pub trait DspAppExt {
     /// Register a DSP source with the given [`SourceType`].
     ///
     /// The type to be registered must implement [`DspGraph`].
+    ///
+    /// ```no_run
+    /// # use bevy::prelude::*;
+    /// # use bevy_fundsp::prelude::*;
+    /// App::new()
+    ///     .add_plugins(DefaultPlugins)
+    ///     .add_plugin(DspPlugin::<DefaultBackend>::default())
+    ///     .add_dsp_source(a_simple_440hz_sine_wave, SourceType::Dynamic)
+    ///     .run();
+    ///
+    /// fn a_simple_440hz_sine_wave() -> impl AudioUnit32 {
+    ///     sine_hz(440.0)
+    /// }
+    /// ```
     fn add_dsp_source<D: DspGraph>(&mut self, dsp_graph: D, source_type: SourceType) -> &mut Self;
 }
 
@@ -137,6 +166,8 @@ impl DspAppExt for App {
         self
     }
 }
+
+static DEFAULT_SAMPLE_RATE: Once = Once::new();
 
 fn default_sample_rate() -> f32 {
     let host = cpal::default_host();
@@ -154,6 +185,8 @@ fn default_sample_rate() -> f32 {
 }
 
 /// Prelude for all `bevy_fundsp` types.
+///
+/// This also includes the `fundsp::hacker32` prelude.
 pub mod prelude {
     pub use crate::backend::{Backend, DefaultBackend, DspAudioExt};
     pub use crate::dsp_graph::DspGraph;

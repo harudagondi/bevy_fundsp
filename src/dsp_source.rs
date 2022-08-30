@@ -41,7 +41,11 @@ pub enum SourceType {
 }
 
 impl DspSource {
-    pub(crate) fn new<D: DspGraph>(dsp_graph: D, sample_rate: f32, source_type: SourceType) -> Self {
+    pub(crate) fn new<D: DspGraph>(
+        dsp_graph: D,
+        sample_rate: f32,
+        source_type: SourceType,
+    ) -> Self {
         Self {
             dsp_graph: Arc::new(dsp_graph),
             sample_rate,
@@ -49,6 +53,13 @@ impl DspSource {
         }
     }
 
+    /// Convert the DSP source to its corresponding bytes.
+    ///
+    /// The source type must be static,
+    /// otherwise it will panic,
+    /// as it does not know how long it is.
+    ///
+    /// Internally, this uses [`fundsp::wave::Wave32`].
     pub(crate) fn to_bytes(&self) -> Vec<u8> {
         let duration = match self.source_type {
             SourceType::Static { duration } => duration,

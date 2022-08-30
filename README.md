@@ -20,18 +20,15 @@ or multiplying your DSP graph with a low constant (lower than 1.0).
 ```rust no_run
 #![allow(clippy::precedence)]
 
-use bevy_fundsp::prelude::*;
 use bevy::prelude::*;
+use bevy_fundsp::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin)
-        .add_startup_system(init_dsp)
-        .add_startup_system_to_stage(
-            StartupStage::PostStartup,
-            play_noise
-        )
+        .add_plugin(DspPlugin::<DefaultBackend>::default())
+        .add_dsp_source(white_noise, SourceType::Dynamic)
+        .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
         .run();
 }
 
@@ -39,15 +36,16 @@ fn white_noise() -> impl AudioUnit32 {
     white() >> split::<U2>() * 0.2
 }
 
-fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
-    dsp_manager.add_graph(white_noise, 30.0); // length is in seconds
+fn play_noise(
+    mut assets: ResMut<Assets<DspSource>>,
+    dsp_manager: Res<DspManager>,
+    audio: Res<Audio<DspSource>>,
+) {
+    let source = dsp_manager
+        .get_graph(white_noise)
+        .unwrap_or_else(|| panic!("DSP source not found!"));
+    DspAudioExt::<DefaultBackend>::play_dsp(audio.as_ref(), assets.as_mut(), source);
 }
-
-fn play_noise(dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
-    let white_noise = dsp_assets.graph(&white_noise);
-    audio.play(white_noise.clone());
-}
-
 ```
 
 ## Compatibility
