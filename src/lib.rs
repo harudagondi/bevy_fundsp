@@ -167,8 +167,6 @@ impl DspAppExt for App {
     }
 }
 
-static DEFAULT_SAMPLE_RATE: Once = Once::new();
-
 fn default_sample_rate() -> f32 {
     let host = cpal::default_host();
     let device = host
