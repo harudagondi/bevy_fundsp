@@ -1,13 +1,7 @@
 #![allow(clippy::precedence)]
 
 use bevy::prelude::*;
-use bevy_fundsp::{
-    backend::{DefaultBackend, DspAudioExt},
-    dsp_manager::DspManager,
-    dsp_source::{DspSource, SourceType},
-    DspAppExt, DspPlugin,
-};
-use fundsp::hacker32::*;
+use bevy_fundsp::prelude::*;
 
 fn main() {
     App::new()
