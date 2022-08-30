@@ -69,7 +69,8 @@ use cpal::traits::{DeviceTrait, HostTrait};
 use dsp_graph::DspGraph;
 use dsp_manager::DspManager;
 use dsp_source::{DspSource, SourceType};
-use std::{marker::PhantomData, sync::Once};
+use once_cell::sync::Lazy;
+use std::marker::PhantomData;
 
 pub mod backend;
 pub mod dsp_graph;
@@ -122,7 +123,7 @@ impl<B: Backend> DspPlugin<B> {
 
 impl<B: Backend> Default for DspPlugin<B> {
     fn default() -> Self {
-        Self::new(default_sample_rate())
+        Self::new(*DEFAULT_SAMPLE_RATE)
     }
 }
 
@@ -166,6 +167,8 @@ impl DspAppExt for App {
         self
     }
 }
+
+static DEFAULT_SAMPLE_RATE: Lazy<f32> = Lazy::new(default_sample_rate);
 
 fn default_sample_rate() -> f32 {
     let host = cpal::default_host();

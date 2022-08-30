@@ -7,9 +7,9 @@ use bevy::{
 use uuid::Uuid;
 
 use crate::{
-    default_sample_rate,
     dsp_graph::DspGraph,
     dsp_source::{DspSource, SourceType},
+    DEFAULT_SAMPLE_RATE,
 };
 
 /// Manages the registered DSP sources.
@@ -24,7 +24,7 @@ pub struct DspManager {
 
 impl Default for DspManager {
     fn default() -> Self {
-        Self::new(default_sample_rate())
+        Self::new(*DEFAULT_SAMPLE_RATE)
     }
 }
 
