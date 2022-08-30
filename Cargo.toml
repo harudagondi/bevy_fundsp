@@ -32,8 +32,7 @@ features = [
 ]
 
 [dependencies.bevy]
-git = "https://github.com/harudagondi/bevy"
-branch = "remove-sync-in-decoder"
+git = "https://github.com/bevyengine/bevy"
 # version = "0.8"
 default-features = false 
 features = ["bevy_asset"]
@@ -47,8 +46,7 @@ features = ["wav"]
 optional = true
 
 [dev-dependencies.bevy]
-git = "https://github.com/harudagondi/bevy"
-branch = "remove-sync-in-decoder"
+git = "https://github.com/bevyengine/bevy"
 # version = "0.8"
 default-features = false
 features = [
