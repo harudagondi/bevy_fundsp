@@ -30,10 +30,7 @@ fn interactive_audio(
     audio: Res<Audio>,
 ) {
     if input.just_pressed(KeyCode::S) {
-        audio.play_dsp(
-            assets.as_mut(),
-            dsp_manager.get_graph(sine_wave).unwrap(),
-        );
+        audio.play_dsp(assets.as_mut(), dsp_manager.get_graph(sine_wave).unwrap());
     }
 
     if input.just_pressed(KeyCode::T) {

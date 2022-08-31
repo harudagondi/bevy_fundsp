@@ -109,9 +109,7 @@ impl DspPlugin {
     /// ```
     #[allow(clippy::must_use_candidate)]
     pub fn new(sample_rate: f32) -> Self {
-        Self {
-            sample_rate,
-        }
+        Self { sample_rate }
     }
 }
 
