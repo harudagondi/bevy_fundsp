@@ -42,7 +42,7 @@ pub trait Backend: Send + Sync + 'static {
 }
 
 /// Extension trait to add a helper method for playing DSP sources.
-pub trait DspAudioExt<B: Backend> {
+pub trait DspAudioExt {
     /// The [`Assets`](bevy::prelude::Assets)
     /// for the concrete `Audio` type in the given backend.
     type Assets;

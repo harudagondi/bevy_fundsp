@@ -70,7 +70,6 @@ use dsp_graph::DspGraph;
 use dsp_manager::DspManager;
 use dsp_source::{DspSource, SourceType};
 use once_cell::sync::Lazy;
-use std::marker::PhantomData;
 
 pub mod backend;
 pub mod dsp_graph;
@@ -87,15 +86,11 @@ pub mod dsp_source;
 ///     .add_plugin(DspPlugin::<DefaultBackend>::default())
 ///     .run()
 /// ```
-pub struct DspPlugin<B = DefaultBackend>
-where
-    B: Backend,
-{
+pub struct DspPlugin {
     sample_rate: f32,
-    _backend: PhantomData<B>,
 }
 
-impl<B: Backend> DspPlugin<B> {
+impl DspPlugin {
     /// Construct the plugin given the sample rate.
     ///
     /// It is recommended to use the [`Default`]
@@ -116,23 +111,22 @@ impl<B: Backend> DspPlugin<B> {
     pub fn new(sample_rate: f32) -> Self {
         Self {
             sample_rate,
-            _backend: PhantomData,
         }
     }
 }
 
-impl<B: Backend> Default for DspPlugin<B> {
+impl Default for DspPlugin {
     fn default() -> Self {
         Self::new(*DEFAULT_SAMPLE_RATE)
     }
 }
 
-impl<B: Backend> Plugin for DspPlugin<B> {
+impl Plugin for DspPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DspManager::new(self.sample_rate))
             .add_asset::<DspSource>();
 
-        B::init_app(app);
+        DefaultBackend::init_app(app);
     }
 }
 

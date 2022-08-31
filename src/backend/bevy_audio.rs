@@ -69,7 +69,7 @@ impl Backend for BevyAudioBackend {
     }
 }
 
-impl<B: Backend> DspAudioExt<B> for Audio<AudioSource> {
+impl DspAudioExt for Audio<AudioSource> {
     type Assets = Assets<AudioSource>;
     type Settings = PlaybackSettings;
     type Sink = Handle<AudioSink>;
@@ -80,7 +80,7 @@ impl<B: Backend> DspAudioExt<B> for Audio<AudioSource> {
         source: &DspSource,
         settings: Self::Settings,
     ) -> Self::Sink {
-        let audio = B::convert_to_static_audio_source(source.clone());
+        let audio = BevyAudioBackend::convert_to_static_audio_source(source.clone());
         let audio: &AudioSource = <dyn Any>::downcast_ref(&audio)
             .unwrap_or_else(|| panic!("Cannot downcast static audio source"));
         let handle = assets.add(audio.clone());
@@ -90,7 +90,7 @@ impl<B: Backend> DspAudioExt<B> for Audio<AudioSource> {
     }
 }
 
-impl<B: Backend> DspAudioExt<B> for Audio<DspSource> {
+impl DspAudioExt for Audio<DspSource> {
     type Assets = Assets<DspSource>;
     type Settings = PlaybackSettings;
     type Sink = Handle<AudioSink>;

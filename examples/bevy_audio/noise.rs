@@ -6,7 +6,7 @@ use bevy_fundsp::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin::<DefaultBackend>::default())
+        .add_plugin(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Dynamic)
         .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
         .run();
@@ -24,5 +24,5 @@ fn play_noise(
     let source = dsp_manager
         .get_graph(white_noise)
         .unwrap_or_else(|| panic!("DSP source not found!"));
-    DspAudioExt::<DefaultBackend>::play_dsp(audio.as_ref(), assets.as_mut(), source);
+    audio.play_dsp(assets.as_mut(), source);
 }

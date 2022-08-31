@@ -6,7 +6,7 @@ use bevy_fundsp::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin::<DefaultBackend>::default())
+        .add_plugin(DspPlugin::default())
         .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
         .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
         .add_system(interactive_audio)
@@ -30,16 +30,14 @@ fn interactive_audio(
     audio: Res<Audio>,
 ) {
     if input.just_pressed(KeyCode::S) {
-        DspAudioExt::<DefaultBackend>::play_dsp(
-            audio.as_ref(),
+        audio.play_dsp(
             assets.as_mut(),
             dsp_manager.get_graph(sine_wave).unwrap(),
         );
     }
 
     if input.just_pressed(KeyCode::T) {
-        DspAudioExt::<DefaultBackend>::play_dsp(
-            audio.as_ref(),
+        audio.play_dsp(
             assets.as_mut(),
             dsp_manager.get_graph(triangle_wave).unwrap(),
         );
