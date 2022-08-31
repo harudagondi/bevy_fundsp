@@ -46,7 +46,6 @@ impl rodio::Source for IterMono {
 
 impl Backend for BevyAudioBackend {
     type StaticAudioSource = AudioSource;
-    type DynamicAudioSource = IterMono;
 
     fn init_app(app: &mut App) {
         app.init_resource::<Audio<DspSource>>()
@@ -54,18 +53,12 @@ impl Backend for BevyAudioBackend {
             .add_system_to_stage(CoreStage::PostUpdate, play_queued_audio_system::<DspSource>);
     }
 
-    fn convert_to_static_audio_source(
+    fn convert_to_audio_source(
         dsp_source: crate::dsp_source::DspSource,
     ) -> Self::StaticAudioSource {
         let bytes = dsp_source.to_bytes().into();
 
         AudioSource { bytes }
-    }
-
-    fn convert_to_dynamic_audio_source(
-        dsp_source: crate::dsp_source::DspSource,
-    ) -> Self::DynamicAudioSource {
-        dsp_source.into_iter().into_mono()
     }
 }
 
@@ -80,7 +73,7 @@ impl DspAudioExt for Audio<AudioSource> {
         source: &DspSource,
         settings: Self::Settings,
     ) -> Self::Sink {
-        let audio = BevyAudioBackend::convert_to_static_audio_source(source.clone());
+        let audio = BevyAudioBackend::convert_to_audio_source(source.clone());
         let audio: &AudioSource = <dyn Any>::downcast_ref(&audio)
             .unwrap_or_else(|| panic!("Cannot downcast static audio source"));
         let handle = assets.add(audio.clone());

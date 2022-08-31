@@ -28,17 +28,11 @@ pub trait Backend: Send + Sync + 'static {
     /// The static audio source.
     /// Usually stores a collection of sound bytes.
     type StaticAudioSource;
-    /// The dynamic audio source.
-    /// Usually a concrete type that implements a trait
-    /// where a method spits out a bunch of samples.
-    type DynamicAudioSource;
 
     /// Initialization of App that is specific for the given Backend.
     fn init_app(app: &mut App);
     /// Convert the given [`DspSource`] to the defined static audio source.
-    fn convert_to_static_audio_source(dsp_source: DspSource) -> Self::StaticAudioSource;
-    /// Convert the given [`DspSource`] to the defined dynamic audio source.
-    fn convert_to_dynamic_audio_source(dsp_source: DspSource) -> Self::DynamicAudioSource;
+    fn convert_to_audio_source(dsp_source: DspSource) -> Self::StaticAudioSource;
 }
 
 /// Extension trait to add a helper method for playing DSP sources.
