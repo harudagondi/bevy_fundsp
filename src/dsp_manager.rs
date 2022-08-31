@@ -32,7 +32,7 @@ impl DspManager {
     pub(crate) fn new(sample_rate: f32) -> Self {
         Self {
             sample_rate,
-            ..default()
+            collection: default(),
         }
     }
 
