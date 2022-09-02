@@ -18,7 +18,7 @@
 //! fn main() {
 //!     App::new()
 //!         .add_plugins(DefaultPlugins)
-//!         .add_plugin(DspPlugin::<DefaultBackend>::default())
+//!         .add_plugin(DspPlugin::default())
 //!         .add_dsp_source(white_noise, SourceType::Dynamic)
 //!         .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
 //!         .run();
@@ -36,7 +36,7 @@
 //!     let source = dsp_manager
 //!         .get_graph(white_noise)
 //!         .unwrap_or_else(|| panic!("DSP source not found!"));
-//!     DspAudioExt::<DefaultBackend>::play_dsp(audio.as_ref(), assets.as_mut(), source);
+//!     audio.play_dsp(assets.as_mut(), source);
 //! }
 //! ```
 //!
@@ -83,7 +83,7 @@ pub mod dsp_source;
 /// # use bevy_fundsp::prelude::*;
 /// App::new()
 ///     .add_plugins(DefaultPlugins)
-///     .add_plugin(DspPlugin::<DefaultBackend>::default())
+///     .add_plugin(DspPlugin::default())
 ///     .run()
 /// ```
 pub struct DspPlugin {
@@ -104,7 +104,7 @@ impl DspPlugin {
     /// # use bevy_fundsp::prelude::*;
     /// App::new()
     ///     .add_plugins(DefaultPlugins)
-    ///     .add_plugin(DspPlugin::<DefaultBackend>::new(44100.0))
+    ///     .add_plugin(DspPlugin::new(44100.0))
     ///     .run()
     /// ```
     #[allow(clippy::must_use_candidate)]
@@ -139,7 +139,7 @@ pub trait DspAppExt {
     /// # use bevy_fundsp::prelude::*;
     /// App::new()
     ///     .add_plugins(DefaultPlugins)
-    ///     .add_plugin(DspPlugin::<DefaultBackend>::default())
+    ///     .add_plugin(DspPlugin::default())
     ///     .add_dsp_source(a_simple_440hz_sine_wave, SourceType::Dynamic)
     ///     .run();
     ///

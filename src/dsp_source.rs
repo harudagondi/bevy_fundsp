@@ -172,3 +172,49 @@ impl Iterator for IterMono {
         Some(self.sample())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::wildcard_imports)]
+
+    use crate::DEFAULT_SAMPLE_RATE;
+
+    use super::{DspSource, SourceType};
+    use fundsp::hacker32::*;
+
+    #[test]
+    fn constant_signal() {
+        let source = DspSource::new(
+            || constant(440.0),
+            *DEFAULT_SAMPLE_RATE,
+            SourceType::Dynamic,
+        );
+
+        let mut iter = source.into_iter();
+
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        
+        let mut iter = iter.into_mono();
+
+        assert_eq!(iter.next(), Some(440.0));
+        assert_eq!(iter.next(), Some(440.0));
+        assert_eq!(iter.next(), Some(440.0));
+    }
+
+    #[test]
+    fn sine_wave_signal() {
+        let sine_wave = || constant(440.0) >> sine();
+
+        let source = DspSource::new(sine_wave, *DEFAULT_SAMPLE_RATE, SourceType::Dynamic);
+
+        let iter = source.into_iter().into_mono();
+        let mut signal = sine_wave();
+
+        for sample in iter.take(1_000_000) {
+            let signal_sample = signal.get_mono();
+            assert!((signal_sample - sample).abs() < f32::EPSILON);
+        }
+    }
+}
