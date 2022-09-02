@@ -195,7 +195,7 @@ mod tests {
         assert_eq!(iter.next(), Some([440.0, 440.0]));
         assert_eq!(iter.next(), Some([440.0, 440.0]));
         assert_eq!(iter.next(), Some([440.0, 440.0]));
-        
+
         let mut iter = iter.into_mono();
 
         assert_eq!(iter.next(), Some(440.0));
