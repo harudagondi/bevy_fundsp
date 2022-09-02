@@ -26,7 +26,7 @@ use bevy_fundsp::prelude::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin::<DefaultBackend>::default())
+        .add_plugin(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Dynamic)
         .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
         .run();
@@ -44,16 +44,18 @@ fn play_noise(
     let source = dsp_manager
         .get_graph(white_noise)
         .unwrap_or_else(|| panic!("DSP source not found!"));
-    DspAudioExt::<DefaultBackend>::play_dsp(audio.as_ref(), assets.as_mut(), source);
+    audio.play_dsp(assets.as_mut(), source);
 }
+
 ```
 
 ## Compatibility
 
-| `bevy_fundsp` | `bevy` | `bevy_kira_audio`          | `fundsp` |
-| ------------- | ------ | -------------------------- | -------- |
-| main          | main   | main, branch = `bevy_main` | main     |
-| 0.1.0         | 0.8    | 0.11                       | 0.6      |
+| `bevy_fundsp`              | `bevy` | `bevy_kira_audio`          | `bevy_oddio`               | `fundsp` |
+| -------------------------- | ------ | -------------------------- | -------------------------- | -------- |
+| main, branch = `bevy_main` | main   | main, branch = `bevy_main` | main, branch = `bevy_main` | main     |
+| 0.2.0                      | 0.9    | 0.12                       |                            | 0.8      |
+| 0.1.0                      | 0.8    | 0.11                       |                            | 0.6      |
 
 ## License
 
