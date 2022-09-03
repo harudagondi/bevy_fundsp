@@ -3,7 +3,7 @@
 
 use crate::dsp_graph::DspGraph;
 use bevy::reflect::TypeUuid;
-use fundsp::{hacker32::AudioUnit32, wave::Wave32};
+use fundsp::{hacker32::AudioUnit32, wave::Wave32, prelude::Tag};
 use std::{cell::RefCell, sync::Arc};
 
 /// A DSP source similar to `AudioSource` in `bevy_audio`.
@@ -170,6 +170,58 @@ impl Iterator for IterMono {
 
     fn next(&mut self) -> Option<Self::Item> {
         Some(self.sample())
+    }
+}
+
+/// Handle for controlling playing DSP sources.
+/// 
+/// Generally, this is used to get or set the tags of a FunDSP graph.
+pub struct DspControl<'source> {
+    audio_unit: &'source RefCell<Box<dyn AudioUnit32>>,
+}
+
+impl<'source> DspControl<'source> {
+    fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self { Self { audio_unit } }
+
+    /// Query the parameter value.
+    /// 
+    /// See more documentation in [AudioUnit32::get].
+    /// 
+    /// [AudioUnit32::get]: fundsp::audiounit::AudioUnit32::get
+    #[must_use]
+    pub fn get(&self, tag: Tag) -> Option<f64> {
+        self.audio_unit.borrow().get(tag)
+    }
+
+    /// Set the tag to the given value.
+    /// 
+    /// See more documentation in [AudioUnit32::set].
+    /// 
+    /// [AudioUnit32::set]: fundsp::audiounit::AudioUnit32::set
+    pub fn set(&self, tag: Tag, value: f64) {
+        self.audio_unit.borrow_mut().set(tag, value);
+    }
+}
+
+trait Controllable<'source> {
+    type Control;
+    
+    fn control(source: &'source Self) -> Self::Control;
+}
+
+impl<'source> Controllable<'source> for Iter {
+    type Control = DspControl<'source>;
+
+    fn control(source: &'source Self) -> Self::Control {
+        DspControl::new(&source.audio_unit)
+    }
+}
+
+impl<'source> Controllable<'source> for IterMono {
+    type Control = DspControl<'source>;
+
+    fn control(source: &'source Self) -> Self::Control {
+        DspControl::new(&source.0.audio_unit)
     }
 }
 
