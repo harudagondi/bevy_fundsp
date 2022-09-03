@@ -271,7 +271,7 @@ mod tests {
     }
 
     #[test]
-    fn sine_wave_controllable() {
+    fn constant_controllable() {
         const FREQ_ID: Tag = 0;
 
         let sine_wave = || tag(FREQ_ID, 440.0);
