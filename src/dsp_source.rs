@@ -3,7 +3,7 @@
 
 use crate::dsp_graph::DspGraph;
 use bevy::reflect::TypeUuid;
-use fundsp::{hacker32::AudioUnit32, wave::Wave32, prelude::Tag};
+use fundsp::{hacker32::AudioUnit32, prelude::Tag, wave::Wave32};
 use std::{cell::RefCell, sync::Arc};
 
 /// A DSP source similar to `AudioSource` in `bevy_audio`.
@@ -174,19 +174,21 @@ impl Iterator for IterMono {
 }
 
 /// Handle for controlling playing DSP sources.
-/// 
+///
 /// Generally, this is used to get or set the tags of a FunDSP graph.
 pub struct DspControl<'source> {
     audio_unit: &'source RefCell<Box<dyn AudioUnit32>>,
 }
 
 impl<'source> DspControl<'source> {
-    fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self { Self { audio_unit } }
+    fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self {
+        Self { audio_unit }
+    }
 
     /// Query the parameter value.
-    /// 
+    ///
     /// See more documentation in [AudioUnit32::get].
-    /// 
+    ///
     /// [AudioUnit32::get]: fundsp::audiounit::AudioUnit32::get
     #[must_use]
     pub fn get(&self, tag: Tag) -> Option<f64> {
@@ -194,9 +196,9 @@ impl<'source> DspControl<'source> {
     }
 
     /// Set the tag to the given value.
-    /// 
+    ///
     /// See more documentation in [AudioUnit32::set].
-    /// 
+    ///
     /// [AudioUnit32::set]: fundsp::audiounit::AudioUnit32::set
     pub fn set(&self, tag: Tag, value: f64) {
         self.audio_unit.borrow_mut().set(tag, value);
@@ -205,7 +207,7 @@ impl<'source> DspControl<'source> {
 
 pub(crate) trait Controllable<'source> {
     type Control;
-    
+
     fn control(&'source self) -> Self::Control;
 }
 
@@ -231,7 +233,7 @@ mod tests {
 
     use crate::DEFAULT_SAMPLE_RATE;
 
-    use super::{DspSource, SourceType, Controllable};
+    use super::{Controllable, DspSource, SourceType};
     use fundsp::hacker32::*;
 
     #[test]
@@ -285,7 +287,7 @@ mod tests {
         assert_eq!(iter.next(), Some([440.0, 440.0]));
 
         iter.control().set(FREQ_ID, 880.0);
-        
+
         assert_eq!(iter.next(), Some([880.0, 880.0]));
         assert_eq!(iter.next(), Some([880.0, 880.0]));
         assert_eq!(iter.next(), Some([880.0, 880.0]));
