@@ -203,25 +203,25 @@ impl<'source> DspControl<'source> {
     }
 }
 
-trait Controllable<'source> {
+pub(crate) trait Controllable<'source> {
     type Control;
     
-    fn control(source: &'source Self) -> Self::Control;
+    fn control(&'source self) -> Self::Control;
 }
 
 impl<'source> Controllable<'source> for Iter {
     type Control = DspControl<'source>;
 
-    fn control(source: &'source Self) -> Self::Control {
-        DspControl::new(&source.audio_unit)
+    fn control(&'source self) -> Self::Control {
+        DspControl::new(&self.audio_unit)
     }
 }
 
 impl<'source> Controllable<'source> for IterMono {
     type Control = DspControl<'source>;
 
-    fn control(source: &'source Self) -> Self::Control {
-        DspControl::new(&source.0.audio_unit)
+    fn control(&'source self) -> Self::Control {
+        DspControl::new(&self.0.audio_unit)
     }
 }
 
@@ -231,7 +231,7 @@ mod tests {
 
     use crate::DEFAULT_SAMPLE_RATE;
 
-    use super::{DspSource, SourceType};
+    use super::{DspSource, SourceType, Controllable};
     use fundsp::hacker32::*;
 
     #[test]
@@ -268,5 +268,38 @@ mod tests {
             let signal_sample = signal.get_mono();
             assert!((signal_sample - sample).abs() < f32::EPSILON);
         }
+    }
+
+    #[test]
+    fn sine_wave_controllable() {
+        const FREQ_ID: Tag = 0;
+
+        let sine_wave = || tag(FREQ_ID, 440.0);
+
+        let source = DspSource::new(sine_wave, *DEFAULT_SAMPLE_RATE, SourceType::Dynamic);
+
+        let mut iter = source.into_iter();
+
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+
+        iter.control().set(FREQ_ID, 880.0);
+        
+        assert_eq!(iter.next(), Some([880.0, 880.0]));
+        assert_eq!(iter.next(), Some([880.0, 880.0]));
+        assert_eq!(iter.next(), Some([880.0, 880.0]));
+
+        let mut iter = iter.into_mono();
+
+        assert_eq!(iter.next(), Some(880.0));
+        assert_eq!(iter.next(), Some(880.0));
+        assert_eq!(iter.next(), Some(880.0));
+
+        iter.control().set(FREQ_ID, 440.0);
+
+        assert_eq!(iter.next(), Some(440.0));
+        assert_eq!(iter.next(), Some(440.0));
+        assert_eq!(iter.next(), Some(440.0));
     }
 }
