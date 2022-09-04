@@ -102,7 +102,7 @@ impl IntoIterator for DspSource {
 /// This is infinite, and would never return `None`.
 pub struct Iter {
     pub(crate) sample_rate: f32,
-    audio_unit: RefCell<Box<dyn AudioUnit32>>,
+    pub(crate) audio_unit: RefCell<Box<dyn AudioUnit32>>,
 }
 
 pub(crate) trait Source {
@@ -182,7 +182,7 @@ pub struct DspControl<'source> {
 }
 
 impl<'source> DspControl<'source> {
-    fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self {
+    pub(crate) fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self {
         Self { audio_unit }
     }
 
