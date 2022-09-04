@@ -9,8 +9,8 @@ use crate::dsp_source::DspSource;
 pub mod bevy_audio;
 // #[cfg(feature = "kira")]
 // pub mod kira;
-// #[cfg(feature = "oddio")]
-// pub mod oddio;
+#[cfg(feature = "oddio")]
+pub mod oddio;
 
 /// The default backend.
 #[allow(clippy::module_name_repetitions)]
@@ -20,8 +20,9 @@ pub type DefaultBackend = bevy_audio::BevyAudioBackend;
 // #[cfg(feature = "kira")]
 // pub type DefaultBackend = kira::KiraBackend;
 /// The default backend.
-// #[cfg(feature = "oddio")]
-// pub type DefaultBackend = oddio::OddioBackend;
+#[allow(clippy::module_name_repetitions)]
+#[cfg(feature = "oddio")]
+pub type DefaultBackend = oddio::OddioBackend;
 
 /// The backend trait used to convert [`DspSource`] into its concrete type.
 pub trait Backend: Send + Sync + 'static {
@@ -49,14 +50,14 @@ pub trait DspAudioExt {
 
     /// Play the given [`DspSource`] with the given settings.
     fn play_dsp_with_settings(
-        &self,
+        &mut self,
         assets: &mut Self::Assets,
         source: &DspSource,
         settings: Self::Settings,
     ) -> Self::Sink;
 
     /// Play the given [`DspSource`] with the default settings.
-    fn play_dsp(&self, assets: &mut Self::Assets, source: &DspSource) -> Self::Sink {
+    fn play_dsp(&mut self, assets: &mut Self::Assets, source: &DspSource) -> Self::Sink {
         self.play_dsp_with_settings(assets, source, default())
     }
 }
