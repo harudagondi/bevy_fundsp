@@ -68,7 +68,7 @@ impl DspAudioExt for Audio<AudioSource> {
     type Sink = Handle<AudioSink>;
 
     fn play_dsp_with_settings(
-        &self,
+        &mut self,
         assets: &mut Self::Assets,
         source: &DspSource,
         settings: Self::Settings,
@@ -89,7 +89,7 @@ impl DspAudioExt for Audio<DspSource> {
     type Sink = Handle<AudioSink>;
 
     fn play_dsp_with_settings(
-        &self,
+        &mut self,
         assets: &mut Self::Assets,
         source: &DspSource,
         settings: Self::Settings,

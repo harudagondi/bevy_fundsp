@@ -27,7 +27,7 @@ fn interactive_audio(
     input: Res<Input<KeyCode>>,
     mut assets: ResMut<Assets<AudioSource>>,
     dsp_manager: Res<DspManager>,
-    audio: Res<Audio>,
+    mut audio: ResMut<Audio>,
 ) {
     if input.just_pressed(KeyCode::S) {
         audio.play_dsp(assets.as_mut(), dsp_manager.get_graph(sine_wave).unwrap());
