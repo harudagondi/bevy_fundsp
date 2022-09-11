@@ -60,9 +60,6 @@ jobs:
 
   clippy:
     name: clippy
-    strategy:
-      matrix:
-        feature: [bevy_audio, kira, oddio]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -77,4 +74,4 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings --no-default-features --features ${{ matrix.feature }}
+          args: -- -D warnings
