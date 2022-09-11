@@ -12,11 +12,11 @@ env:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         feature: [bevy_audio, kira, oddio] 
         os: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.os }}
-    
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
