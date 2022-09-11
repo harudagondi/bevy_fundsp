@@ -67,3 +67,7 @@ See [LICENSE-APACHE](LICENSE-APACHE) and [LICENSE-MIT](LICENSE-MIT) for details.
 ## Acknowledgement
 
 I'd like to say thanks to the authors of [FunDSP] and [Bevy] for making this plugin possible.
+
+> ## Ko-fi
+>
+> [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/D1D11H8FF)
