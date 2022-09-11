@@ -162,6 +162,7 @@ impl DspAppExt for App {
 
 static DEFAULT_SAMPLE_RATE: Lazy<f32> = Lazy::new(default_sample_rate);
 
+#[cfg(not(test))]
 fn default_sample_rate() -> f32 {
     let host = cpal::default_host();
     let device = host
@@ -175,6 +176,12 @@ fn default_sample_rate() -> f32 {
     {
         default_config.sample_rate().0 as f32
     }
+}
+
+#[cfg(test)]
+fn default_sample_rate() -> f32 {
+    bevy::log::warn!("This is in test mode!");
+    44100.0
 }
 
 /// Prelude for all `bevy_fundsp` types.
