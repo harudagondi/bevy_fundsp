@@ -31,7 +31,7 @@
 //! fn play_noise(
 //!     mut assets: ResMut<Assets<DspSource>>,
 //!     dsp_manager: Res<DspManager>,
-//!     audio: Res<Audio<DspSource>>,
+//!     mut audio: ResMut<Audio<DspSource>>,
 //! ) {
 //!     let source = dsp_manager
 //!         .get_graph(white_noise)
