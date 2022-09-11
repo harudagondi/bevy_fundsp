@@ -5,12 +5,12 @@ use std::{cell::RefCell, rc::Rc};
 use bevy::prelude::{App, Assets, Handle};
 use bevy_oddio::{
     frames::{FromFrame, Stereo},
-    oddio::{Frame, Frames, Signal, Controlled},
+    oddio::{Controlled, Frame, Frames, Signal},
     output::AudioSink,
     Audio, AudioApp, AudioSource, ToSignal,
 };
 
-use crate::dsp_source::{DspSource, Iter, Source, SourceType, DspControl};
+use crate::dsp_source::{DspControl, DspSource, Iter, Source, SourceType};
 
 use super::{Backend, DspAudioExt};
 
