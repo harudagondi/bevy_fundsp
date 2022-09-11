@@ -65,7 +65,6 @@
 
 use backend::{Backend, DefaultBackend};
 use bevy::prelude::{AddAsset, App, Plugin};
-use cpal::traits::{DeviceTrait, HostTrait};
 use dsp_graph::DspGraph;
 use dsp_manager::DspManager;
 use dsp_source::{DspSource, SourceType};
@@ -164,6 +163,8 @@ static DEFAULT_SAMPLE_RATE: Lazy<f32> = Lazy::new(default_sample_rate);
 
 #[cfg(not(test))]
 fn default_sample_rate() -> f32 {
+    use cpal::traits::{DeviceTrait, HostTrait};
+
     let host = cpal::default_host();
     let device = host
         .default_output_device()
