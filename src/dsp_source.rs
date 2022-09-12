@@ -3,7 +3,7 @@
 
 use crate::dsp_graph::DspGraph;
 use bevy::reflect::TypeUuid;
-use fundsp::{hacker32::AudioUnit32, prelude::Tag, wave::Wave32};
+use fundsp::{hacker32::AudioUnit32, wave::Wave32};
 use std::{cell::RefCell, sync::Arc};
 
 /// A DSP source similar to `AudioSource` in `bevy_audio`.
@@ -174,67 +174,13 @@ impl Iterator for IterMono {
     }
 }
 
-/// Handle for controlling playing DSP sources.
-///
-/// Generally, this is used to get or set the tags of a FunDSP graph.
-pub struct DspControl<'source> {
-    audio_unit: &'source RefCell<Box<dyn AudioUnit32>>,
-}
-
-impl<'source> DspControl<'source> {
-    pub(crate) fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self {
-        Self { audio_unit }
-    }
-
-    /// Query the parameter value.
-    ///
-    /// See more documentation in [AudioUnit32::get].
-    ///
-    /// [AudioUnit32::get]: fundsp::audiounit::AudioUnit32::get
-    #[must_use]
-    pub fn get(&self, tag: Tag) -> Option<f64> {
-        self.audio_unit.borrow().get(tag)
-    }
-
-    /// Set the tag to the given value.
-    ///
-    /// See more documentation in [AudioUnit32::set].
-    ///
-    /// [AudioUnit32::set]: fundsp::audiounit::AudioUnit32::set
-    pub fn set(&self, tag: Tag, value: f64) {
-        self.audio_unit.borrow_mut().set(tag, value);
-    }
-}
-
-pub(crate) trait Controllable<'source> {
-    type Control;
-
-    fn control(&'source self) -> Self::Control;
-}
-
-impl<'source> Controllable<'source> for Iter {
-    type Control = DspControl<'source>;
-
-    fn control(&'source self) -> Self::Control {
-        DspControl::new(&self.audio_unit)
-    }
-}
-
-impl<'source> Controllable<'source> for IterMono {
-    type Control = DspControl<'source>;
-
-    fn control(&'source self) -> Self::Control {
-        DspControl::new(&self.0.audio_unit)
-    }
-}
-
 #[cfg(test)]
 mod tests {
     #![allow(clippy::wildcard_imports)]
 
     use crate::DEFAULT_SAMPLE_RATE;
 
-    use super::{Controllable, DspSource, SourceType};
+    use super::{DspSource, SourceType};
     use fundsp::hacker32::*;
 
     #[test]
@@ -271,38 +217,5 @@ mod tests {
             let signal_sample = signal.get_mono();
             assert!((signal_sample - sample).abs() < f32::EPSILON);
         }
-    }
-
-    #[test]
-    fn constant_controllable() {
-        const FREQ_ID: Tag = 0;
-
-        let sine_wave = || tag(FREQ_ID, 440.0);
-
-        let source = DspSource::new(sine_wave, *DEFAULT_SAMPLE_RATE, SourceType::Dynamic);
-
-        let mut iter = source.into_iter();
-
-        assert_eq!(iter.next(), Some([440.0, 440.0]));
-        assert_eq!(iter.next(), Some([440.0, 440.0]));
-        assert_eq!(iter.next(), Some([440.0, 440.0]));
-
-        iter.control().set(FREQ_ID, 880.0);
-
-        assert_eq!(iter.next(), Some([880.0, 880.0]));
-        assert_eq!(iter.next(), Some([880.0, 880.0]));
-        assert_eq!(iter.next(), Some([880.0, 880.0]));
-
-        let mut iter = iter.into_mono();
-
-        assert_eq!(iter.next(), Some(880.0));
-        assert_eq!(iter.next(), Some(880.0));
-        assert_eq!(iter.next(), Some(880.0));
-
-        iter.control().set(FREQ_ID, 440.0);
-
-        assert_eq!(iter.next(), Some(440.0));
-        assert_eq!(iter.next(), Some(440.0));
-        assert_eq!(iter.next(), Some(440.0));
     }
 }
