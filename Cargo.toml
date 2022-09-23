@@ -14,7 +14,7 @@ categories = ["game-development", "multimedia::audio"]
 
 [dependencies]
 fundsp = "0.6"
-kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
+kira = { version = "0.7", default-features = false, features = ["wav"], optional = true }
 # bevy_oddio = { git = "https://github.com/harudagondi/bevy_oddio.git", optional = true }
 
 atomic = "0.5"
