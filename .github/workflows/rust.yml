@@ -7,7 +7,7 @@ jobs:
     name: check bevy_audio
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -23,7 +23,7 @@ jobs:
     name: test bevy_audio
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -39,7 +39,7 @@ jobs:
     name: check kira
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -56,7 +56,7 @@ jobs:
     name: test kira
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -73,7 +73,7 @@ jobs:
   #   name: check oddio
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v3
   #     - uses: actions-rs/toolchain@v1
   #       with:
   #         profile: minimal
@@ -90,7 +90,7 @@ jobs:
   #   name: test oddio
   #   runs-on: ubuntu-latest
   #   steps:
-  #     - uses: actions/checkout@v2
+  #     - uses: actions/checkout@v3
   #     - uses: actions-rs/toolchain@v1
   #       with:
   #         profile: minimal
@@ -107,7 +107,7 @@ jobs:
     name: fmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
@@ -125,7 +125,7 @@ jobs:
     name: clippy
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
