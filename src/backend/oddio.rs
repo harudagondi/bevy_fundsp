@@ -9,8 +9,9 @@ use bevy_oddio::{
     output::AudioSink,
     Audio, AudioApp, AudioSource, ToSignal,
 };
+use fundsp::prelude::{AudioUnit32, Tag};
 
-use crate::dsp_source::{DspControl, DspSource, Iter, Source, SourceType};
+use crate::dsp_source::{DspSource, Iter, IterMono, Source, SourceType};
 
 use super::{Backend, DspAudioExt};
 
@@ -229,6 +230,14 @@ unsafe impl<'source> Controlled<'source> for Iter {
 
 #[cfg(test)]
 mod tests {
+    use fundsp::{hacker32::tag, prelude::Tag};
+
+    use crate::{
+        backend::oddio::Controllable,
+        dsp_source::{DspSource, SourceType},
+        DEFAULT_SAMPLE_RATE,
+    };
+
     #[test]
     fn constant_controllable() {
         const FREQ_ID: Tag = 0;
