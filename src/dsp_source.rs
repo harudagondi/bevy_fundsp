@@ -213,7 +213,7 @@ mod tests {
         let iter = source.into_iter().into_mono();
         let mut signal = sine_wave();
 
-        for sample in iter.take(1_000_000) {
+        for sample in iter.take(1_000) {
             let signal_sample = signal.get_mono();
             assert!((signal_sample - sample).abs() < f32::EPSILON);
         }
