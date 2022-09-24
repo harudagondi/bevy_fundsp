@@ -175,6 +175,9 @@ impl Source for IterMono {
     }
 
     fn sample(&self) -> f32 {
+        while let Some((parameter, value)) = self.0.receiver.borrow_mut().pop() {
+            self.0.audio_unit.borrow_mut().set(parameter, value);
+        }
         self.0.audio_unit.borrow_mut().get_mono()
     }
 }
