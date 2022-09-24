@@ -90,5 +90,7 @@ jobs:
           rustup toolchain install nightly --component miri
           rustup override set nightly
           cargo miri setup
+      - name: Install alsa and udev
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
       - name: Test with Miri
         run: cargo miri test --no-default-features --features ${{ matrix.feature }}
