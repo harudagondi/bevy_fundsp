@@ -79,6 +79,10 @@ jobs:
   miri:
     name: miri
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        feature: [bevy_audio, kira, oddio] 
     steps:
       - uses: actions/checkout@v3
       - name: Install Miri
@@ -87,4 +91,4 @@ jobs:
           rustup override set nightly
           cargo miri setup
       - name: Test with Miri
-        run: cargo miri test
+        run: cargo miri test --no-default-features --features ${{ matrix.feature }}
