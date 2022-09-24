@@ -8,7 +8,6 @@ use bevy::{
         PlaybackSettings,
     },
 };
-use std::any::Any;
 
 use super::{Backend, DspAudioExt};
 
@@ -74,12 +73,8 @@ impl DspAudioExt for Audio<AudioSource> {
         settings: Self::Settings,
     ) -> Self::Sink {
         let audio = BevyAudioBackend::convert_to_audio_source(source.clone());
-        let audio: &AudioSource = <dyn Any>::downcast_ref(&audio)
-            .unwrap_or_else(|| panic!("Cannot downcast static audio source"));
-        let handle = assets.add(audio.clone());
-        let settings: &PlaybackSettings = <dyn Any>::downcast_ref(&settings)
-            .unwrap_or_else(|| panic!("Cannot downcast playback settings"));
-        self.play_with_settings(handle, settings.clone())
+        let handle = assets.add(audio);
+        self.play_with_settings(handle, settings)
     }
 }
 
