@@ -3,8 +3,12 @@
 
 use crate::dsp_graph::DspGraph;
 use bevy::reflect::TypeUuid;
-use fundsp::{hacker32::AudioUnit32, wave::Wave32};
+use fundsp::{hacker32::AudioUnit32, prelude::Tag, wave::Wave32};
+use parking_lot::Mutex;
+use ringbuf::{Consumer, Producer, RingBuffer};
 use std::{cell::RefCell, sync::Arc};
+
+type SetTag = (Tag, f64);
 
 /// A DSP source similar to `AudioSource` in `bevy_audio`.
 ///
@@ -89,9 +93,13 @@ impl IntoIterator for DspSource {
     type IntoIter = Iter;
 
     fn into_iter(self) -> Self::IntoIter {
+        let (sender, receiver) = RingBuffer::new(64).split();
+
         Iter {
             sample_rate: self.sample_rate,
             audio_unit: RefCell::new(self.dsp_graph.generate_graph()),
+            sender: Arc::new(Mutex::new(sender)),
+            receiver: RefCell::new(receiver),
         }
     }
 }
@@ -103,6 +111,8 @@ impl IntoIterator for DspSource {
 pub struct Iter {
     pub(crate) sample_rate: f32,
     pub(crate) audio_unit: RefCell<Box<dyn AudioUnit32>>,
+    pub(crate) sender: Arc<Mutex<Producer<SetTag>>>,
+    pub(crate) receiver: RefCell<Consumer<SetTag>>,
 }
 
 pub(crate) trait Source {
@@ -135,6 +145,9 @@ impl Source for Iter {
     }
 
     fn sample(&self) -> Self::Frame {
+        while let Some((parameter, value)) = self.receiver.borrow_mut().pop() {
+            self.audio_unit.borrow_mut().set(parameter, value);
+        }
         let frame = self.audio_unit.borrow_mut().get_stereo();
         [frame.0, frame.1]
     }
@@ -174,11 +187,55 @@ impl Iterator for IterMono {
     }
 }
 
+/// Handle for controlling playing DSP sources.
+///
+/// Generally, this is used to get or set the tags of a FunDSP graph.
+pub struct DspControl {
+    sender: Arc<Mutex<Producer<SetTag>>>,
+}
+
+impl DspControl {
+    pub(crate) fn new(sender: Arc<Mutex<Producer<SetTag>>>) -> Self {
+        Self { sender }
+    }
+
+    /// Set the tag to the given value.
+    ///
+    /// See more documentation in [AudioUnit32::set].
+    ///
+    /// [AudioUnit32::set]: fundsp::audiounit::AudioUnit32::set
+    pub fn set(&self, tag: Tag, value: f64) {
+        while let Err(_) = self.sender.lock().push((tag, value)) {}
+    }
+}
+
+pub(crate) trait Controllable {
+    type Control;
+
+    fn control(&self) -> Self::Control;
+}
+
+impl Controllable for Iter {
+    type Control = DspControl;
+
+    fn control(&self) -> Self::Control {
+        DspControl::new(self.sender.clone())
+    }
+}
+
+impl Controllable for IterMono {
+    type Control = DspControl;
+
+    fn control(&self) -> Self::Control {
+        self.0.control()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #![allow(clippy::wildcard_imports)]
 
-    use crate::DEFAULT_SAMPLE_RATE;
+    use crate::{dsp_source::Controllable, DEFAULT_SAMPLE_RATE};
 
     use super::{DspSource, SourceType};
     use fundsp::hacker32::*;
@@ -217,5 +274,38 @@ mod tests {
             let signal_sample = signal.get_mono();
             assert!((signal_sample - sample).abs() < f32::EPSILON);
         }
+    }
+
+    #[test]
+    fn constant_controllable() {
+        const FREQ_ID: Tag = 0;
+
+        let sine_wave = || tag(FREQ_ID, 440.0);
+
+        let source = DspSource::new(sine_wave, *DEFAULT_SAMPLE_RATE, SourceType::Dynamic);
+
+        let mut iter = source.into_iter();
+
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+        assert_eq!(iter.next(), Some([440.0, 440.0]));
+
+        iter.control().set(FREQ_ID, 880.0);
+
+        assert_eq!(iter.next(), Some([880.0, 880.0]));
+        assert_eq!(iter.next(), Some([880.0, 880.0]));
+        assert_eq!(iter.next(), Some([880.0, 880.0]));
+
+        let mut iter = iter.into_mono();
+
+        assert_eq!(iter.next(), Some(880.0));
+        assert_eq!(iter.next(), Some(880.0));
+        assert_eq!(iter.next(), Some(880.0));
+
+        iter.control().set(FREQ_ID, 440.0);
+
+        assert_eq!(iter.next(), Some(440.0));
+        assert_eq!(iter.next(), Some(440.0));
+        assert_eq!(iter.next(), Some(440.0));
     }
 }

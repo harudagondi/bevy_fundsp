@@ -9,9 +9,8 @@ use bevy_oddio::{
     output::AudioSink,
     Audio, AudioApp, AudioSource, ToSignal,
 };
-use fundsp::prelude::{AudioUnit32, Tag};
 
-use crate::dsp_source::{DspSource, Iter, IterMono, Source, SourceType};
+use crate::dsp_source::{DspControl, DspSource, Iter, IterMono, Source, SourceType};
 
 use super::{Backend, DspAudioExt};
 
@@ -166,108 +165,18 @@ impl DspAudioExt for Audio<Stereo, DspSource> {
     }
 }
 
-/// Handle for controlling playing DSP sources.
-///
-/// Generally, this is used to get or set the tags of a FunDSP graph.
-pub struct DspControl<'source> {
-    audio_unit: &'source RefCell<Box<dyn AudioUnit32>>,
-}
+unsafe impl<'a> Controlled<'a> for Iter {
+    type Control = DspControl;
 
-impl<'source> DspControl<'source> {
-    pub(crate) fn new(audio_unit: &'source RefCell<Box<dyn AudioUnit32>>) -> Self {
-        Self { audio_unit }
-    }
-
-    /// Query the parameter value.
-    ///
-    /// See more documentation in [AudioUnit32::get].
-    ///
-    /// [AudioUnit32::get]: fundsp::audiounit::AudioUnit32::get
-    #[must_use]
-    pub fn get(&self, tag: Tag) -> Option<f64> {
-        self.audio_unit.borrow().get(tag)
-    }
-
-    /// Set the tag to the given value.
-    ///
-    /// See more documentation in [AudioUnit32::set].
-    ///
-    /// [AudioUnit32::set]: fundsp::audiounit::AudioUnit32::set
-    pub fn set(&self, tag: Tag, value: f64) {
-        self.audio_unit.borrow_mut().set(tag, value);
+    unsafe fn make_control(signal: &'a Self) -> Self::Control {
+        DspControl::new(signal.sender.clone())
     }
 }
 
-pub(crate) trait Controllable<'source> {
-    type Control;
+unsafe impl<'a> Controlled<'a> for IterMono {
+    type Control = DspControl;
 
-    fn control(&'source self) -> Self::Control;
-}
-
-impl<'source> Controllable<'source> for Iter {
-    type Control = DspControl<'source>;
-
-    fn control(&'source self) -> Self::Control {
-        DspControl::new(&self.audio_unit)
-    }
-}
-
-impl<'source> Controllable<'source> for IterMono {
-    type Control = DspControl<'source>;
-
-    fn control(&'source self) -> Self::Control {
-        DspControl::new(&self.0.audio_unit)
-    }
-}
-
-unsafe impl<'source> Controlled<'source> for Iter {
-    type Control = DspControl<'source>;
-
-    unsafe fn make_control(signal: &'source Self) -> Self::Control {
-        DspControl::new(&signal.audio_unit)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use fundsp::{hacker32::tag, prelude::Tag};
-
-    use crate::{
-        backend::oddio::Controllable,
-        dsp_source::{DspSource, SourceType},
-        DEFAULT_SAMPLE_RATE,
-    };
-
-    #[test]
-    fn constant_controllable() {
-        const FREQ_ID: Tag = 0;
-
-        let sine_wave = || tag(FREQ_ID, 440.0);
-
-        let source = DspSource::new(sine_wave, *DEFAULT_SAMPLE_RATE, SourceType::Dynamic);
-
-        let mut iter = source.into_iter();
-
-        assert_eq!(iter.next(), Some([440.0, 440.0]));
-        assert_eq!(iter.next(), Some([440.0, 440.0]));
-        assert_eq!(iter.next(), Some([440.0, 440.0]));
-
-        iter.control().set(FREQ_ID, 880.0);
-
-        assert_eq!(iter.next(), Some([880.0, 880.0]));
-        assert_eq!(iter.next(), Some([880.0, 880.0]));
-        assert_eq!(iter.next(), Some([880.0, 880.0]));
-
-        let mut iter = iter.into_mono();
-
-        assert_eq!(iter.next(), Some(880.0));
-        assert_eq!(iter.next(), Some(880.0));
-        assert_eq!(iter.next(), Some(880.0));
-
-        iter.control().set(FREQ_ID, 440.0);
-
-        assert_eq!(iter.next(), Some(440.0));
-        assert_eq!(iter.next(), Some(440.0));
-        assert_eq!(iter.next(), Some(440.0));
+    unsafe fn make_control(signal: &'a Self) -> Self::Control {
+        Iter::make_control(&signal.0)
     }
 }
