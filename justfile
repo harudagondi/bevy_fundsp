@@ -8,9 +8,6 @@ test-all:
     -cargo test --no-default-features --features kira
     -cargo test --no-default-features --features oddio
 
-test feature:
-    cargo test --no-default-features --features 
-
 check-fmt:
     cargo fmt --all -- --check
 
