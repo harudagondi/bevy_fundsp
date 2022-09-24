@@ -205,7 +205,7 @@ impl DspControl {
     ///
     /// [AudioUnit32::set]: fundsp::audiounit::AudioUnit32::set
     pub fn set(&self, tag: Tag, value: f64) {
-        while let Err(_) = self.sender.lock().push((tag, value)) {}
+        while self.sender.lock().push((tag, value)).is_err() {}
     }
 }
 
