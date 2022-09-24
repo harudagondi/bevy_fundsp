@@ -1,25 +1,18 @@
 set windows-powershell := true
 
-check:
-    cargo check
-    cargo check --no-default-features --features bevy_audio
-    cargo check --no-default-features --features kira
-    cargo check --no-default-features --features oddio
+ci: check-fmt clippy test-all
 
-test:
+test-all:
     cargo test
-    cargo test --no-default-features --features bevy_audio
-    cargo test --no-default-features --features kira
-    cargo test --no-default-features --features oddio
+    -cargo test --no-default-features --features bevy_audio
+    -cargo test --no-default-features --features kira
+    -cargo test --no-default-features --features oddio
 
-fmt:
+test feature:
+    cargo test --no-default-features --features 
+
+check-fmt:
     cargo fmt --all -- --check
 
 clippy:
     cargo clippy
-
-ci:
-    just fmt
-    just clippy
-    just check
-    just test
