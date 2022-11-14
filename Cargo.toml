@@ -21,7 +21,7 @@ atomic = "0.5"
 
 [dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.8"
+version = "0.9"
 default-features = false 
 features = ["bevy_asset"]
 
