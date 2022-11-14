@@ -23,8 +23,8 @@ fundsp = "0.9"
 cpal = "0.14"
 once_cell = "1.13"
 rodio = { version = "0.16", default-features = false, features = ["wav"], optional = true }
-kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
-ringbuf = "0.2"
+kira = { version = "0.7", default-features = false, features = ["wav"], optional = true }
+ringbuf = "0.3"
 parking_lot = "0.12"
 
 [dependencies.uuid]
@@ -34,29 +34,30 @@ features = [
 ]
 
 [dependencies.bevy]
-git = "https://github.com/bevyengine/bevy"
-# version = "0.8"
+# git = "https://github.com/bevyengine/bevy"
+version = "0.9"
 default-features = false 
 features = ["bevy_asset"]
 
 [dependencies.bevy_kira_audio]
-git = "https://github.com/NiklasEi/bevy_kira_audio.git"
+# git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-# version = "0.12"
+version = "0.13"
 default-features = false
 features = ["wav"]
 optional = true
 
 [dependencies.bevy_oddio]
-git = "https://github.com/harudagondi/bevy_oddio"
-branch = "bevy_main"
+# git = "https://github.com/harudagondi/bevy_oddio"
+# branch = "bevy_main"
+version = "0.3"
 default-features = false
 optional = true
 features = ["wav"]
 
 [dev-dependencies.bevy]
-git = "https://github.com/bevyengine/bevy"
-# version = "0.8"
+# git = "https://github.com/bevyengine/bevy"
+version = "0.9"
 default-features = false
 features = [
   "render",

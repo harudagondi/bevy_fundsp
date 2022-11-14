@@ -7,8 +7,8 @@ use crate::dsp_source::DspSource;
 
 #[cfg(feature = "bevy_audio")]
 pub mod bevy_audio;
-// #[cfg(feature = "kira")]
-// pub mod kira;
+#[cfg(feature = "kira")]
+pub mod kira;
 #[cfg(feature = "oddio")]
 pub mod oddio;
 
@@ -17,8 +17,9 @@ pub mod oddio;
 #[cfg(feature = "bevy_audio")]
 pub type DefaultBackend = bevy_audio::BevyAudioBackend;
 /// The default backend.
-// #[cfg(feature = "kira")]
-// pub type DefaultBackend = kira::KiraBackend;
+#[allow(clippy::module_name_repetitions)]
+#[cfg(feature = "kira")]
+pub type DefaultBackend = kira::KiraBackend;
 /// The default backend.
 #[allow(clippy::module_name_repetitions)]
 #[cfg(feature = "oddio")]

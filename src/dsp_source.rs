@@ -5,7 +5,7 @@ use crate::dsp_graph::DspGraph;
 use bevy::reflect::TypeUuid;
 use fundsp::{hacker32::AudioUnit32, prelude::Tag, wave::Wave32};
 use parking_lot::Mutex;
-use ringbuf::{Consumer, Producer, RingBuffer};
+use ringbuf::{Consumer, HeapRb, Producer};
 use std::{cell::RefCell, sync::Arc};
 
 type SetTag = (Tag, f64);
@@ -93,7 +93,7 @@ impl IntoIterator for DspSource {
     type IntoIter = Iter;
 
     fn into_iter(self) -> Self::IntoIter {
-        let (sender, receiver) = RingBuffer::new(64).split();
+        let (sender, receiver) = HeapRb::new(64).split();
 
         Iter {
             sample_rate: self.sample_rate,
@@ -111,8 +111,8 @@ impl IntoIterator for DspSource {
 pub struct Iter {
     pub(crate) sample_rate: f32,
     pub(crate) audio_unit: RefCell<Box<dyn AudioUnit32>>,
-    pub(crate) sender: Arc<Mutex<Producer<SetTag>>>,
-    pub(crate) receiver: RefCell<Consumer<SetTag>>,
+    pub(crate) sender: Arc<Mutex<Producer<SetTag, Arc<HeapRb<SetTag>>>>>,
+    pub(crate) receiver: RefCell<Consumer<SetTag, Arc<HeapRb<SetTag>>>>,
 }
 
 pub(crate) trait Source {
@@ -194,11 +194,11 @@ impl Iterator for IterMono {
 ///
 /// Generally, this is used to get or set the tags of a FunDSP graph.
 pub struct DspControl {
-    sender: Arc<Mutex<Producer<SetTag>>>,
+    sender: Arc<Mutex<Producer<SetTag, Arc<HeapRb<SetTag>>>>>,
 }
 
 impl DspControl {
-    pub(crate) fn new(sender: Arc<Mutex<Producer<SetTag>>>) -> Self {
+    pub(crate) fn new(sender: Arc<Mutex<Producer<SetTag, Arc<HeapRb<SetTag>>>>>) -> Self {
         Self { sender }
     }
 

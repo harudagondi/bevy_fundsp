@@ -43,7 +43,7 @@ fn change_pitch(
     time: Res<Time>,
 ) {
     if let Some(sink) = assets.get_mut(&sink.0) {
-        let exp = time.seconds_since_startup().sin();
+        let exp = time.elapsed_seconds_wrapped_f64().sin();
         let pitch_hz = 2.0.pow(exp) * 440.0;
 
         sink.control::<dsp_source::Iter, _>()
