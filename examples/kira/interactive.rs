@@ -2,14 +2,15 @@
 
 use bevy::prelude::*;
 use bevy_fundsp::prelude::*;
-use bevy_kira_audio::*;
+use bevy_kira_audio::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(AudioPlugin)
-        .add_plugin(DspPlugin)
-        .add_startup_system(init_dsp)
+        .add_plugin(DspPlugin::default())
+        .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
+        .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
         .add_system(interactive_audio)
         .run();
 }
@@ -24,23 +25,27 @@ fn triangle_wave() -> impl AudioUnit32 {
     triangle_hz(392.0) >> split::<U2>() * 0.2
 }
 
-fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
-    // length is in seconds
-    dsp_manager
-        .add_graph(sine_wave, 5.0)
-        .add_graph(triangle_wave, 5.0);
-}
-
-fn interactive_audio(input: Res<Input<KeyCode>>, dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
+fn interactive_audio(
+    input: Res<Input<KeyCode>>,
+    mut assets: ResMut<Assets<AudioSource>>,
+    dsp_manager: Res<DspManager>,
+    audio: ResMut<Audio>,
+) {
     if input.just_pressed(KeyCode::S) {
-        audio.play_looped(dsp_assets.graph(&sine_wave));
+        let source = dsp_manager
+            .get_graph(sine_wave)
+            .unwrap_or_else(|| panic!("DSP source not found!"));
+        let audio_source = DefaultBackend::convert_to_audio_source(source.clone());
+        let audio_source = assets.add(audio_source);
+        audio.play(audio_source);
     }
 
     if input.just_pressed(KeyCode::T) {
-        audio.play_looped(dsp_assets.graph(&triangle_wave));
-    }
-
-    if input.just_pressed(KeyCode::P) {
-        audio.stop();
+        let source = dsp_manager
+            .get_graph(triangle_wave)
+            .unwrap_or_else(|| panic!("DSP source not found!"));
+        let audio_source = DefaultBackend::convert_to_audio_source(source.clone());
+        let audio_source = assets.add(audio_source);
+        audio.play(audio_source);
     }
 }

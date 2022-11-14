@@ -1,107 +1,44 @@
-on: [push, pull_request]
+name: CI
 
-name: Continuous integration
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
-  check_bevy_audio:
-    name: check bevy_audio
-    runs-on: ubuntu-latest
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        feature: [bevy_audio, kira, oddio] 
+        os: [windows-latest, ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-build-${{ matrix.toolchain }}-${{ hashFiles('**/Cargo.toml') }}
       - uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
           toolchain: stable
           override: true
       - name: Install alsa and udev
         run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-
-  test_bevy_audio:
-    name: test bevy_audio
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install alsa and udev
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+        if: runner.os == 'linux'
       - uses: actions-rs/cargo@v1
         with:
           command: test
-
-  check_kira:
-    name: check kira
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install alsa and udev
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --no-default-features --features kira
-
-  test_kira:
-    name: test kira
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - name: Install alsa and udev
-        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --no-default-features --features kira
-  
-  # check_oddio:
-  #   name: check oddio
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions-rs/toolchain@v1
-  #       with:
-  #         profile: minimal
-  #         toolchain: stable
-  #         override: true
-  #     - name: Install alsa and udev
-  #       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-  #     - uses: actions-rs/cargo@v1
-  #       with:
-  #         command: check
-  #         args: --no-default-features --features oddio
-
-  # test_oddio:
-  #   name: test oddio
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions-rs/toolchain@v1
-  #       with:
-  #         profile: minimal
-  #         toolchain: stable
-  #         override: true
-  #     - name: Install alsa and udev
-  #       run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
-  #     - uses: actions-rs/cargo@v1
-  #       with:
-  #         command: test
-  #         args: --no-default-features --features oddio
+          args: --no-default-features --features ${{ matrix.feature }}
 
   fmt:
     name: fmt
@@ -138,3 +75,22 @@ jobs:
         with:
           command: clippy
           args: -- -D warnings
+
+  miri:
+    name: miri
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        feature: [bevy_audio, kira, oddio] 
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Miri
+        run: |
+          rustup toolchain install nightly --component miri
+          rustup override set nightly
+          cargo miri setup
+      - name: Install alsa and udev
+        run: sudo apt-get update; sudo apt-get install --no-install-recommends libasound2-dev libudev-dev
+      - name: Test with Miri
+        run: cargo miri test --no-default-features --features ${{ matrix.feature }}

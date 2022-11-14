@@ -1,7 +1,7 @@
 [package]
 name = "bevy_fundsp"
 authors = ["Gio Genre De Asis"]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "A Bevy plugin that integrates FunDSP into Bevy."
 homepage = "https://github.com/harudagondi/bevy_fundsp"
@@ -12,36 +12,52 @@ categories = ["game-development", "multimedia::audio"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+default = ["bevy_audio"]
+kira = ["dep:kira", "bevy_kira_audio"]
+bevy_audio = ["bevy/bevy_audio", "bevy/wav", "rodio"]
+oddio = ["bevy_oddio"]
+
 [dependencies]
 fundsp = "0.9"
-kira = { version = "0.6", default-features = false, features = ["wav"], optional = true }
-# bevy_oddio = { git = "https://github.com/harudagondi/bevy_oddio.git", optional = true }
+cpal = "0.14"
+once_cell = "1.13"
+rodio = { version = "0.16", default-features = false, features = ["wav"], optional = true }
+kira = { version = "0.7", default-features = false, features = ["wav"], optional = true }
+ringbuf = "0.3"
+parking_lot = "0.12"
 
-atomic = "0.5"
+[dependencies.uuid]
+version = "1.1"
+features = [
+  "v5"
+]
 
 [dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.8"
+version = "0.9"
 default-features = false 
 features = ["bevy_asset"]
 
 [dependencies.bevy_kira_audio]
 # git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-version = "0.11"
+version = "0.13"
 default-features = false
 features = ["wav"]
 optional = true
 
-[features]
-default = ["bevy_audio"]
-kira = ["dep:kira", "bevy_kira_audio"]
-bevy_audio = ["bevy/bevy_audio", "bevy/wav"]
-# oddio = ["bevy_oddio"]
+[dependencies.bevy_oddio]
+# git = "https://github.com/harudagondi/bevy_oddio"
+# branch = "bevy_main"
+version = "0.3"
+default-features = false
+optional = true
+features = ["wav"]
 
 [dev-dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.8"
+version = "0.9"
 default-features = false
 features = [
   "render",
@@ -76,7 +92,17 @@ name = "kira_interactive"
 path = "examples/kira/interactive.rs"
 required-features = ["kira"]
 
-# [[example]]
-# name = "oddio_noise"
-# path = "examples/oddio/noise.rs"
-# required-features = ["oddio"]
+[[example]]
+name = "oddio_noise"
+path = "examples/oddio/noise.rs"
+required-features = ["oddio"]
+
+[[example]]
+name = "oddio_interactive"
+path = "examples/oddio/interactive.rs"
+required-features = ["oddio"]
+
+[[example]]
+name = "oddio_controlled"
+path = "examples/oddio/controlled.rs"
+required-features = ["oddio"]

@@ -20,18 +20,15 @@ or multiplying your DSP graph with a low constant (lower than 1.0).
 ```rust no_run
 #![allow(clippy::precedence)]
 
-use bevy_fundsp::prelude::*;
 use bevy::prelude::*;
+use bevy_fundsp::prelude::*;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin)
-        .add_startup_system(init_dsp)
-        .add_startup_system_to_stage(
-            StartupStage::PostStartup,
-            play_noise
-        )
+        .add_plugin(DspPlugin::default())
+        .add_dsp_source(white_noise, SourceType::Dynamic)
+        .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
         .run();
 }
 
@@ -39,23 +36,26 @@ fn white_noise() -> impl AudioUnit32 {
     white() >> split::<U2>() * 0.2
 }
 
-fn init_dsp(mut dsp_manager: ResMut<DspManager>) {
-    dsp_manager.add_graph(white_noise, 30.0); // length is in seconds
-}
-
-fn play_noise(dsp_assets: Res<DspAssets>, audio: Res<Audio>) {
-    let white_noise = dsp_assets.graph(&white_noise);
-    audio.play(white_noise.clone());
+fn play_noise(
+    mut assets: ResMut<Assets<DspSource>>,
+    dsp_manager: Res<DspManager>,
+    mut audio: ResMut<Audio<DspSource>>,
+) {
+    let source = dsp_manager
+        .get_graph(white_noise)
+        .unwrap_or_else(|| panic!("DSP source not found!"));
+    audio.play_dsp(assets.as_mut(), source);
 }
 
 ```
 
 ## Compatibility
 
-| `bevy_fundsp` | `bevy` | `bevy_kira_audio`          | `fundsp` |
-| ------------- | ------ | -------------------------- | -------- |
-| main          | main   | main, branch = `bevy_main` | main     |
-| 0.1.0         | 0.8    | 0.11                       | 0.6      |
+| `bevy_fundsp` | `bevy` | `bevy_kira_audio` | `bevy_oddio` | `fundsp` |
+| ------------- | ------ | ----------------- | ------------ | -------- |
+| bevy_main     | main   | bevy_main         | bevy_main    | main     |
+| 0.2.0         | 0.9    | 0.13              | 0.3          | 0.8      |
+| 0.1.0         | 0.8    | 0.11              |              | 0.6      |
 
 ## License
 
