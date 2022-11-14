@@ -1,7 +1,7 @@
 [package]
 name = "bevy_fundsp"
 authors = ["Gio Genre De Asis"]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "A Bevy plugin that integrates FunDSP into Bevy."
 homepage = "https://github.com/harudagondi/bevy_fundsp"
