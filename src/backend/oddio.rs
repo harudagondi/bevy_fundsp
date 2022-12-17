@@ -5,12 +5,12 @@ use std::{cell::RefCell, rc::Rc};
 use bevy::prelude::{App, Assets, Handle};
 use bevy_oddio::{
     frames::{FromFrame, Stereo},
-    oddio::{Controlled, Frame, Frames, Signal},
+    oddio::{Frame, Frames, Signal},
     output::AudioSink,
     Audio, AudioApp, AudioSource, ToSignal,
 };
 
-use crate::dsp_source::{DspControl, DspSource, Iter, IterMono, Source, SourceType};
+use crate::dsp_source::{DspSource, Iter, Source, SourceType};
 
 use super::{Backend, DspAudioExt};
 
@@ -162,21 +162,5 @@ impl DspAudioExt for Audio<Stereo, DspSource> {
     ) -> Self::Sink {
         let source_handle = assets.add(source.clone());
         self.play(source_handle, settings)
-    }
-}
-
-unsafe impl<'a> Controlled<'a> for Iter {
-    type Control = DspControl;
-
-    unsafe fn make_control(signal: &'a Self) -> Self::Control {
-        DspControl::new(signal.sender.clone())
-    }
-}
-
-unsafe impl<'a> Controlled<'a> for IterMono {
-    type Control = DspControl;
-
-    unsafe fn make_control(signal: &'a Self) -> Self::Control {
-        Iter::make_control(&signal.0)
     }
 }
