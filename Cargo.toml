@@ -19,13 +19,11 @@ bevy_audio = ["bevy/bevy_audio", "bevy/wav", "rodio"]
 oddio = ["bevy_oddio"]
 
 [dependencies]
-fundsp = "0.9"
+fundsp = "0.10"
 cpal = "0.14"
 once_cell = "1.13"
 rodio = { version = "0.16", default-features = false, features = ["wav"], optional = true }
 kira = { version = "0.7", default-features = false, features = ["wav"], optional = true }
-ringbuf = "0.3"
-parking_lot = "0.12"
 
 [dependencies.uuid]
 version = "1.1"
@@ -100,9 +98,4 @@ required-features = ["oddio"]
 [[example]]
 name = "oddio_interactive"
 path = "examples/oddio/interactive.rs"
-required-features = ["oddio"]
-
-[[example]]
-name = "oddio_controlled"
-path = "examples/oddio/controlled.rs"
 required-features = ["oddio"]
