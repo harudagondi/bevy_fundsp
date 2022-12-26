@@ -19,7 +19,7 @@ bevy_audio = ["bevy/bevy_audio", "bevy/wav", "rodio"]
 oddio = ["bevy_oddio"]
 
 [dependencies]
-fundsp = "0.10"
+fundsp = "0.11"
 cpal = "0.14"
 once_cell = "1.13"
 rodio = { version = "0.16", default-features = false, features = ["wav"], optional = true }
