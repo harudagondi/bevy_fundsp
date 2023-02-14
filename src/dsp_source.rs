@@ -1,10 +1,12 @@
 //! Module for [`DspSource`],
 //! a type that is analogous to `AudioSource` in `bevy_audio`.
 
-use crate::dsp_graph::DspGraph;
-use bevy::reflect::TypeUuid;
-use fundsp::{hacker32::AudioUnit32, wave::Wave32};
-use std::{cell::RefCell, sync::Arc};
+use {
+    crate::dsp_graph::DspGraph,
+    bevy::reflect::TypeUuid,
+    fundsp::{hacker32::AudioUnit32, wave::Wave32},
+    std::{cell::RefCell, sync::Arc},
+};
 
 /// A DSP source similar to `AudioSource` in `bevy_audio`.
 ///
@@ -178,10 +180,11 @@ impl Iterator for IterMono {
 mod tests {
     #![allow(clippy::wildcard_imports)]
 
-    use crate::DEFAULT_SAMPLE_RATE;
-
-    use super::{DspSource, SourceType};
-    use fundsp::hacker32::*;
+    use {
+        super::{DspSource, SourceType},
+        crate::DEFAULT_SAMPLE_RATE,
+        fundsp::hacker32::*,
+    };
 
     #[test]
     fn constant_signal() {
