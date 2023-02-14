@@ -5,12 +5,12 @@ use std::{cell::RefCell, rc::Rc};
 use bevy::prelude::{App, Assets, Handle};
 use bevy_oddio::{
     frames::{FromFrame, Stereo},
-    oddio::{Frame, Frames, Signal},
+    oddio::{Frame, Frames, Sample, Signal},
     output::AudioSink,
     Audio, AudioApp, AudioSource, ToSignal,
 };
 
-use crate::dsp_source::{DspSource, Iter, Source, SourceType};
+use crate::dsp_source::{DspSource, Iter, IterMono, Source, SourceType};
 
 use super::{Backend, DspAudioExt};
 
@@ -128,6 +128,18 @@ impl Signal for Iter {
             let frame = Source::sample(self);
             let stereo: Stereo = FromFrame::from_frame(frame);
             *out_frame = stereo;
+        }
+    }
+}
+
+impl Signal for IterMono {
+    //  Frame must be f32 to be compatible with oddio spatial audio.
+    type Frame = Sample;
+
+    fn sample(&self, interval: f32, out: &mut [Self::Frame]) {
+        for out_frame in out {
+            let frame = Source::sample(self);
+            *out_frame = frame;
         }
     }
 }
