@@ -29,12 +29,14 @@
 //! [FunDSP]: https://github.com/SamiPerttu/fundsp
 //! [Bevy]: https://bevyengine.org/
 
-use backend::{Backend, DefaultBackend};
-use bevy::prelude::{AddAsset, App, Plugin};
-use dsp_graph::DspGraph;
-use dsp_manager::DspManager;
-use dsp_source::{DspSource, SourceType};
-use once_cell::sync::Lazy;
+use {
+    backend::{Backend, DefaultBackend},
+    bevy::prelude::{AddAsset, App, Plugin},
+    dsp_graph::DspGraph,
+    dsp_manager::DspManager,
+    dsp_source::{DspSource, SourceType},
+    once_cell::sync::Lazy,
+};
 
 pub mod backend;
 pub mod dsp_graph;
@@ -155,13 +157,16 @@ fn default_sample_rate() -> f32 {
 ///
 /// This also includes the `fundsp::hacker32` prelude.
 pub mod prelude {
-    pub use crate::backend::{Backend, DefaultBackend, DspAudioExt};
-    pub use crate::dsp_graph::DspGraph;
-    pub use crate::dsp_manager::DspManager;
-    pub use crate::dsp_source::{DspSource, Iter, IterMono, SourceType};
-    pub use crate::DspAppExt;
-    pub use crate::DspPlugin;
-    pub use fundsp::hacker32::*;
+    pub use {
+        crate::{
+            backend::{Backend, DefaultBackend, DspAudioExt},
+            dsp_graph::DspGraph,
+            dsp_manager::DspManager,
+            dsp_source::{DspSource, Iter, IterMono, SourceType},
+            DspAppExt, DspPlugin,
+        },
+        fundsp::hacker32::*,
+    };
 }
 
 #[doc = include_str!("../README.md")]

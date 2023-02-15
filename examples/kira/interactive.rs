@@ -1,8 +1,6 @@
 #![allow(clippy::precedence)]
 
-use bevy::prelude::*;
-use bevy_fundsp::prelude::*;
-use bevy_kira_audio::prelude::*;
+use {bevy::prelude::*, bevy_fundsp::prelude::*, bevy_kira_audio::prelude::*};
 
 fn main() {
     App::new()

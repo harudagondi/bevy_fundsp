@@ -1,18 +1,17 @@
 //! Implementation to integrate `bevy_fundsp` into `bevy_oddio`.
 
-use std::{cell::RefCell, rc::Rc};
-
-use bevy::prelude::{App, Assets, Handle};
-use bevy_oddio::{
-    frames::{FromFrame, Stereo},
-    oddio::{Frame, Frames, Sample, Signal},
-    output::AudioSink,
-    Audio, AudioApp, AudioSource, ToSignal,
+use {
+    super::{Backend, DspAudioExt},
+    crate::dsp_source::{DspSource, Iter, IterMono, Source, SourceType},
+    bevy::prelude::{App, Assets, Handle},
+    bevy_oddio::{
+        frames::{FromFrame, Stereo},
+        oddio::{Frame, Frames, Sample, Signal},
+        output::AudioSink,
+        Audio, AudioApp, AudioSource, ToSignal,
+    },
+    std::{cell::RefCell, rc::Rc},
 };
-
-use crate::dsp_source::{DspSource, Iter, IterMono, Source, SourceType};
-
-use super::{Backend, DspAudioExt};
 
 /// The backend for `bevy_oddio`.
 #[allow(clippy::module_name_repetitions)]

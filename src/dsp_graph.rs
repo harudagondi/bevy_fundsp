@@ -1,7 +1,6 @@
 //! Module for the [`DspGraph`] trait.
 
-use fundsp::prelude::AudioUnit32;
-use uuid::Uuid;
+use {fundsp::prelude::AudioUnit32, uuid::Uuid};
 
 /// Trait for generating DSP sources.
 ///

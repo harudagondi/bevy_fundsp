@@ -1,9 +1,10 @@
 //! Module for the [`Backend`] trait
 //! that is implemented for each audio plugin in the Bevy ecosystem.
 
-use bevy::{prelude::App, utils::default};
-
-use crate::dsp_source::DspSource;
+use {
+    crate::dsp_source::DspSource,
+    bevy::{prelude::App, utils::default},
+};
 
 #[cfg(feature = "bevy_audio")]
 pub mod bevy_audio;

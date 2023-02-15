@@ -1,15 +1,16 @@
 //! Implementation to integrate `bevy_fundsp` into `bevy_audio`.
 
-use crate::dsp_source::{DspSource, IterMono};
-use bevy::{
-    audio::{play_queued_audio_system, AudioSink},
-    prelude::{
-        App, Assets, Audio, AudioOutput, AudioSource, CoreStage, Decodable, Handle,
-        PlaybackSettings,
+use {
+    super::{Backend, DspAudioExt},
+    crate::dsp_source::{DspSource, IterMono},
+    bevy::{
+        audio::{play_queued_audio_system, AudioSink},
+        prelude::{
+            App, Assets, Audio, AudioOutput, AudioSource, CoreStage, Decodable, Handle,
+            PlaybackSettings,
+        },
     },
 };
-
-use super::{Backend, DspAudioExt};
 
 /// The backend for `bevy_audio`.
 #[allow(clippy::module_name_repetitions)]

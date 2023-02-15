@@ -1,20 +1,19 @@
 //! Implementation to integrate `bevy_fundsp` into `bevy_kira_audio`.
 
-use std::io::Cursor;
-
-use bevy::prelude::App;
-use bevy_kira_audio::AudioSource;
-use kira::{
-    clock::clock_info::ClockInfoProvider,
-    sound::{
-        static_sound::{StaticSoundData, StaticSoundSettings},
-        Sound, SoundData,
+use {
+    super::Backend,
+    crate::dsp_source::{DspSource, Iter, Source},
+    bevy::prelude::App,
+    bevy_kira_audio::AudioSource,
+    kira::{
+        clock::clock_info::ClockInfoProvider,
+        sound::{
+            static_sound::{StaticSoundData, StaticSoundSettings},
+            Sound, SoundData,
+        },
     },
+    std::io::Cursor,
 };
-
-use crate::dsp_source::{DspSource, Iter, Source};
-
-use super::Backend;
 
 impl SoundData for DspSource {
     type Error = ();
