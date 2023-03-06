@@ -40,7 +40,7 @@ features = ["bevy_asset"]
 [dependencies.bevy_kira_audio]
 # git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-version = "0.13"
+version = "0.14"
 default-features = false
 features = ["wav"]
 optional = true
