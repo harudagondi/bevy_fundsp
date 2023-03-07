@@ -49,7 +49,7 @@ impl Backend for BevyAudioBackend {
 
     fn init_app(app: &mut App) {
         app.init_resource::<Audio<DspSource>>()
-            .init_non_send_resource::<AudioOutput<DspSource>>()
+            .init_resource::<AudioOutput<DspSource>>()
             .add_system(play_queued_audio_system::<DspSource>.in_base_set(CoreSet::PostUpdate));
     }
 
