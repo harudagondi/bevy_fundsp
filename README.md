@@ -54,6 +54,7 @@ fn play_noise(
 | `bevy_fundsp` | `bevy` | `bevy_kira_audio` | `bevy_oddio` | `fundsp` |
 | ------------- | ------ | ----------------- | ------------ | -------- |
 | bevy_main     | main   | bevy_main         | bevy_main    | main     |
+| 0.3.0         | 0.10   | 0.15              | 0.4          | 0.12     |
 | 0.2.0         | 0.9    | 0.13              | 0.3          | 0.9      |
 | 0.1.0         | 0.8    | 0.11              |              | 0.6      |
 
