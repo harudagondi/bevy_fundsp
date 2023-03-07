@@ -6,8 +6,8 @@ use {
     bevy::{
         audio::{play_queued_audio_system, AudioSink},
         prelude::{
-            App, Assets, Audio, AudioOutput, AudioSource, CoreStage, Decodable, Handle,
-            PlaybackSettings,
+            App, Assets, Audio, AudioOutput, AudioSource, CoreSet, Decodable, Handle,
+            IntoSystemConfig, PlaybackSettings,
         },
     },
 };
@@ -50,7 +50,7 @@ impl Backend for BevyAudioBackend {
     fn init_app(app: &mut App) {
         app.init_resource::<Audio<DspSource>>()
             .init_non_send_resource::<AudioOutput<DspSource>>()
-            .add_system_to_stage(CoreStage::PostUpdate, play_queued_audio_system::<DspSource>);
+            .add_system(play_queued_audio_system::<DspSource>.in_base_set(CoreSet::PostUpdate));
     }
 
     fn convert_to_audio_source(

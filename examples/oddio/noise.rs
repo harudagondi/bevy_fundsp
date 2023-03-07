@@ -3,16 +3,16 @@
 use {
     bevy::prelude::*,
     bevy_fundsp::prelude::*,
-    bevy_oddio::{frames::Stereo, Audio, AudioPlugin},
+    bevy_oddio::{Audio, AudioPlugin},
 };
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin)
+        .add_plugin(AudioPlugin::new())
         .add_plugin(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Dynamic)
-        .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
+        .add_startup_system(play_noise.in_base_set(StartupSet::PostStartup))
         .run();
 }
 
@@ -23,7 +23,7 @@ fn white_noise() -> impl AudioUnit32 {
 fn play_noise(
     mut assets: ResMut<Assets<DspSource>>,
     dsp_manager: Res<DspManager>,
-    mut audio: ResMut<Audio<Stereo, DspSource>>,
+    mut audio: ResMut<Audio<[f32; 2], DspSource>>,
 ) {
     let source = dsp_manager
         .get_graph(white_noise)

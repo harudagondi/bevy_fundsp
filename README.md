@@ -21,15 +21,14 @@ or multiplying your DSP graph with a low constant (lower than 1.0).
 ```rust no_run
 #![allow(clippy::precedence)]
 
-use bevy::prelude::*;
-use bevy_fundsp::prelude::*;
+use {bevy::prelude::*, bevy_fundsp::prelude::*};
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugin(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Dynamic)
-        .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
+        .add_startup_system(play_noise.in_base_set(StartupSet::PostStartup))
         .run();
 }
 
