@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 14-11-2022
+
+Updated bevy and other crate dependencies.
+
+### Added
+
+- Implemented `Signal` for `IterMono` (`bevy_oddio`)
+
 ## [0.2.0] - 14-11-2022
 
 Reworked the majority of the internals.
@@ -36,6 +44,7 @@ Reworked the majority of the internals.
 
 - New bevy plugin! `bevy_fundsp` integrates fundsp with bevy.
 
-[Unreleased]: https://github.com/harudagondi/bevy_fundsp/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/harudagondi/bevy_fundsp/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/harudagondi/bevy_fundsp/compare/v0.1.0...v0.3.0
 [0.2.0]: https://github.com/harudagondi/bevy_fundsp/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/harudagondi/bevy_fundsp/releases/tag/v0.1.0
