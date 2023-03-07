@@ -8,7 +8,7 @@ fn main() {
         .add_plugin(AudioPlugin)
         .add_plugin(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Static { duration: 60.0 })
-        .add_startup_system_to_stage(StartupStage::PostStartup, play_noise)
+        .add_startup_system(play_noise.in_base_set(StartupSet::PostStartup))
         .run();
 }
 

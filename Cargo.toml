@@ -1,7 +1,7 @@
 [package]
 name = "bevy_fundsp"
 authors = ["Gio Genre De Asis"]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "A Bevy plugin that integrates FunDSP into Bevy."
 homepage = "https://github.com/harudagondi/bevy_fundsp"
@@ -22,7 +22,7 @@ oddio = ["bevy_oddio"]
 fundsp = "0.12"
 cpal = "0.15"
 once_cell = "1.13"
-rodio = { version = "0.16", default-features = false, features = ["wav"], optional = true }
+rodio = { version = "0.17.1", default-features = false, features = ["wav"], optional = true }
 kira = { version = "0.7", default-features = false, features = ["wav"], optional = true }
 
 [dependencies.uuid]
@@ -33,14 +33,14 @@ features = [
 
 [dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.9"
+version = "0.10"
 default-features = false 
 features = ["bevy_asset"]
 
 [dependencies.bevy_kira_audio]
 # git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-version = "0.13"
+version = "0.15"
 default-features = false
 features = ["wav"]
 optional = true
@@ -48,17 +48,23 @@ optional = true
 [dependencies.bevy_oddio]
 # git = "https://github.com/harudagondi/bevy_oddio"
 # branch = "bevy_main"
-version = "0.3"
+version = "0.4"
 default-features = false
 optional = true
 features = ["wav"]
 
 [dev-dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.9"
+version = "0.10"
 default-features = false
 features = [
-  "render",
+  "bevy_core_pipeline",
+  "bevy_pbr",
+  "bevy_gltf",
+  "bevy_render",
+  "bevy_sprite",
+  "bevy_text",
+  "bevy_ui",
   "animation",
   "bevy_winit",
   "bevy_gilrs",

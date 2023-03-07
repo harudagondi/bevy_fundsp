@@ -3,13 +3,13 @@
 use {
     bevy::prelude::*,
     bevy_fundsp::prelude::*,
-    bevy_oddio::{frames::Stereo, Audio, AudioPlugin, AudioSource},
+    bevy_oddio::{Audio, AudioPlugin, AudioSource},
 };
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin)
+        .add_plugin(AudioPlugin::new())
         .add_plugin(DspPlugin::default())
         .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
         .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
@@ -29,9 +29,9 @@ fn triangle_wave() -> impl AudioUnit32 {
 
 fn interactive_audio(
     input: Res<Input<KeyCode>>,
-    mut assets: ResMut<Assets<AudioSource<Stereo>>>,
+    mut assets: ResMut<Assets<AudioSource<[f32; 2]>>>,
     dsp_manager: Res<DspManager>,
-    mut audio: ResMut<Audio<Stereo, AudioSource<Stereo>>>,
+    mut audio: ResMut<Audio<[f32; 2], AudioSource<[f32; 2]>>>,
 ) {
     if input.just_pressed(KeyCode::S) {
         audio.play_dsp(assets.as_mut(), dsp_manager.get_graph(sine_wave).unwrap());

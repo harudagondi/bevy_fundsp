@@ -5,8 +5,7 @@ use {
     crate::dsp_source::{DspSource, Iter, IterMono, Source, SourceType},
     bevy::prelude::{App, Assets, Handle},
     bevy_oddio::{
-        frames::{FromFrame, Stereo},
-        oddio::{Frame, Frames, Sample, Signal},
+        oddio::{Frames, Sample, Signal},
         output::AudioSink,
         Audio, AudioApp, AudioSource, ToSignal,
     },
@@ -18,10 +17,10 @@ use {
 pub struct OddioBackend;
 
 impl Backend for OddioBackend {
-    type StaticAudioSource = AudioSource<Stereo>;
+    type StaticAudioSource = AudioSource<[f32; 2]>;
 
     fn init_app(app: &mut App) {
-        app.add_audio_source::<2, _, DspSource>();
+        app.add_audio_source::<_, DspSource>();
     }
 
     #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
@@ -49,7 +48,7 @@ impl DspSource {
     #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
     pub(crate) fn into_exact_size_iter(
         self,
-    ) -> ExactSizeIter<impl Iterator<Item = Stereo> + ExactSizeIterator> {
+    ) -> ExactSizeIter<impl Iterator<Item = [f32; 2]> + ExactSizeIterator> {
         let audio_unit = Rc::new(RefCell::new(self.dsp_graph.generate_graph()));
         let duration = match self.source_type {
             SourceType::Static { duration } => duration,
@@ -62,8 +61,7 @@ impl DspSource {
 
         let collection = (0..number_of_frames)
             .map(|_| audio_unit.clone().borrow_mut().get_stereo())
-            .map(|frame| [frame.0, frame.1])
-            .map(Stereo::from);
+            .map(|frame| [frame.0, frame.1]);
 
         ExactSizeIter {
             sample_rate: self.sample_rate,
@@ -74,7 +72,7 @@ impl DspSource {
 
 pub(crate) struct ExactSizeIter<I>
 where
-    I: Iterator<Item = Stereo> + ExactSizeIterator,
+    I: Iterator<Item = [f32; 2]> + ExactSizeIterator,
 {
     sample_rate: f32,
     collection: RefCell<I>,
@@ -82,27 +80,24 @@ where
 
 impl<I> Source for ExactSizeIter<I>
 where
-    I: Iterator<Item = Stereo> + ExactSizeIterator,
+    I: Iterator<Item = [f32; 2]> + ExactSizeIterator,
 {
-    type Frame = Stereo;
+    type Frame = [f32; 2];
 
     fn sample_rate(&self) -> f32 {
         self.sample_rate
     }
 
     fn sample(&self) -> Self::Frame {
-        match self.collection.borrow_mut().next() {
-            Some(frame) => frame,
-            None => Stereo::ZERO,
-        }
+        self.collection.borrow_mut().next().unwrap_or_default()
     }
 }
 
 impl<I> Iterator for ExactSizeIter<I>
 where
-    I: Iterator<Item = Stereo> + ExactSizeIterator,
+    I: Iterator<Item = [f32; 2]> + ExactSizeIterator,
 {
-    type Item = Stereo;
+    type Item = [f32; 2];
 
     fn next(&mut self) -> Option<Self::Item> {
         self.collection.borrow_mut().next()
@@ -111,7 +106,7 @@ where
 
 impl<I> ExactSizeIterator for ExactSizeIter<I>
 where
-    I: Iterator<Item = Stereo> + ExactSizeIterator,
+    I: Iterator<Item = [f32; 2]> + ExactSizeIterator,
 {
     fn len(&self) -> usize {
         self.collection.borrow().len()
@@ -119,14 +114,12 @@ where
 }
 
 impl Signal for Iter {
-    type Frame = Stereo;
+    type Frame = [f32; 2];
 
     fn sample(&self, interval: f32, out: &mut [Self::Frame]) {
         self.advance(interval);
         for out_frame in out {
-            let frame = Source::sample(self);
-            let stereo: Stereo = FromFrame::from_frame(frame);
-            *out_frame = stereo;
+            *out_frame = Source::sample(self);
         }
     }
 }
@@ -136,6 +129,7 @@ impl Signal for IterMono {
     type Frame = Sample;
 
     fn sample(&self, interval: f32, out: &mut [Self::Frame]) {
+        self.advance(interval);
         for out_frame in out {
             let frame = Source::sample(self);
             *out_frame = frame;
@@ -143,10 +137,10 @@ impl Signal for IterMono {
     }
 }
 
-impl DspAudioExt for Audio<Stereo, AudioSource<Stereo>> {
-    type Assets = Assets<AudioSource<Stereo>>;
-    type Settings = <AudioSource<Stereo> as ToSignal>::Settings;
-    type Sink = Handle<AudioSink<AudioSource<Stereo>>>;
+impl DspAudioExt for Audio<[f32; 2], AudioSource<[f32; 2]>> {
+    type Assets = Assets<AudioSource<[f32; 2]>>;
+    type Settings = <AudioSource<[f32; 2]> as ToSignal>::Settings;
+    type Sink = Handle<AudioSink<AudioSource<[f32; 2]>>>;
 
     fn play_dsp_with_settings(
         &mut self,
@@ -160,7 +154,7 @@ impl DspAudioExt for Audio<Stereo, AudioSource<Stereo>> {
     }
 }
 
-impl DspAudioExt for Audio<Stereo, DspSource> {
+impl DspAudioExt for Audio<[f32; 2], DspSource> {
     type Assets = Assets<DspSource>;
     type Settings = <DspSource as ToSignal>::Settings;
     type Sink = Handle<AudioSink<DspSource>>;
