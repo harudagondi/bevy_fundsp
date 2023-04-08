@@ -86,6 +86,11 @@ path = "examples/bevy_audio/interactive.rs"
 required-features = ["bevy_audio"]
 
 [[example]]
+name = "pitch"
+path = "examples/bevy_audio/pitch.rs"
+required-features = ["bevy_audio"]
+
+[[example]]
 name = "kira_noise"
 path = "examples/kira/noise.rs"
 required-features = ["kira"]

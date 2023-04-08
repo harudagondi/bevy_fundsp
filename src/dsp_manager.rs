@@ -49,4 +49,12 @@ impl DspManager {
     pub fn get_graph<D: DspGraph>(&self, dsp_graph: D) -> Option<&DspSource> {
         self.collection.get(&dsp_graph.id())
     }
+
+    /// Get the DSP source given a UUID of the DSP graph.
+    ///
+    /// Useful if you cannot use the DSP graph directly.
+    #[must_use]
+    pub fn get_graph_by_id(&self, uuid: &Uuid) -> Option<&DspSource> {
+        self.collection.get(uuid)
+    }
 }
