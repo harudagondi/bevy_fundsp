@@ -3,7 +3,7 @@
 
 use {
     crate::dsp_graph::DspGraph,
-    bevy::reflect::{TypeUuid, TypePath},
+    bevy::reflect::{TypePath, TypeUuid},
     fundsp::{hacker32::AudioUnit32, wave::Wave32},
     std::{cell::RefCell, sync::Arc},
 };
@@ -47,11 +47,7 @@ impl DspSource {
     //
     // Left the missing doc warning in here so this gets noticed.
     // pub(crate) fn new<D: DspGraph>(
-    pub fn new<D: DspGraph>(
-        dsp_graph: D,
-        sample_rate: f32,
-        source_type: SourceType,
-    ) -> Self {
+    pub fn new<D: DspGraph>(dsp_graph: D, sample_rate: f32, source_type: SourceType) -> Self {
         Self {
             dsp_graph: Arc::new(dsp_graph),
             sample_rate,

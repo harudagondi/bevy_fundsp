@@ -21,14 +21,16 @@ fn play_noise(
     dsp_manager: Res<DspManager>,
     // mut audio: ResMut<Audio<DspSource>>,
 ) {
-    let source = assets.add(dsp_manager
-        .get_graph(white_noise)
-        .unwrap_or_else(|| panic!("DSP source not found!"))
-                            // HACK: I'm cloning here and that may be wrong.
-                            .clone()
+    let source = assets.add(
+        dsp_manager
+            .get_graph(white_noise)
+            .unwrap_or_else(|| panic!("DSP source not found!"))
+            // HACK: I'm cloning here and that may be wrong.
+            .clone(),
     );
     commands.spawn(AudioSourceBundle {
-         source,
-        ..default() });
+        source,
+        ..default()
+    });
     // audio.play_dsp(assets.as_mut(), source);
 }

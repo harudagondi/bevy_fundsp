@@ -5,9 +5,7 @@ use {
     crate::dsp_source::{DspSource, IterMono},
     bevy::{
         audio::AddAudioSource,
-        prelude::{
-            App, AudioSource, Decodable,
-        },
+        prelude::{App, AudioSource, Decodable},
     },
 };
 

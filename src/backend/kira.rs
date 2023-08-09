@@ -6,13 +6,13 @@ use {
     bevy::prelude::App,
     bevy_kira_audio::AudioSource,
     kira::{
-        OutputDestination,
         clock::clock_info::ClockInfoProvider,
+        modulator::value_provider::ModulatorValueProvider,
         sound::{
             static_sound::{StaticSoundData, StaticSoundSettings},
             Sound, SoundData,
         },
-        modulator::value_provider::ModulatorValueProvider,
+        OutputDestination,
     },
     std::io::Cursor,
 };
@@ -27,13 +27,17 @@ impl SoundData for DspSource {
 }
 
 impl Sound for Iter {
-
     fn output_destination(&mut self) -> OutputDestination {
         OutputDestination::Track(kira::track::TrackId::Main)
     }
 
     #[allow(clippy::cast_possible_truncation)]
-    fn process(&mut self, dt: f64, _: &ClockInfoProvider, _: &ModulatorValueProvider) -> kira::dsp::Frame {
+    fn process(
+        &mut self,
+        dt: f64,
+        _: &ClockInfoProvider,
+        _: &ModulatorValueProvider,
+    ) -> kira::dsp::Frame {
         self.advance(dt as f32);
         let frame = self.sample();
         kira::dsp::Frame {

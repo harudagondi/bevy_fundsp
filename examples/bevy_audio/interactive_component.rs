@@ -34,36 +34,40 @@ enum Dsp {
     Triangle,
 }
 
-fn setup(
-    mut commands: Commands,
-    mut assets: ResMut<Assets<DspSource>>,
-) {
+fn setup(mut commands: Commands, mut assets: ResMut<Assets<DspSource>>) {
     let sample_rate = 44_100.0; // This should come from somewhere else.
-    commands.spawn(
-        (AudioSourceBundle {
-            source: assets.add(DspSource::new(sine_wave, sample_rate, SourceType::Static { duration: 0.5 })),
+    commands.spawn((
+        AudioSourceBundle {
+            source: assets.add(DspSource::new(
+                sine_wave,
+                sample_rate,
+                SourceType::Static { duration: 0.5 },
+            )),
             settings: PlaybackSettings {
                 paused: false,
                 ..default()
-            }
+            },
         },
-        Dsp::Sine));
+        Dsp::Sine,
+    ));
 
-    commands.spawn(
-        (AudioSourceBundle {
-            source: assets.add(DspSource::new(triangle_wave, sample_rate, SourceType::Static { duration: 0.5 })),
+    commands.spawn((
+        AudioSourceBundle {
+            source: assets.add(DspSource::new(
+                triangle_wave,
+                sample_rate,
+                SourceType::Static { duration: 0.5 },
+            )),
             settings: PlaybackSettings {
                 paused: true,
                 ..default()
-            }
+            },
         },
-        Dsp::Triangle));
+        Dsp::Triangle,
+    ));
 }
 
-fn interactive_audio(
-    input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut AudioSink, &Dsp)>,
-) {
+fn interactive_audio(input: Res<Input<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
     if input.just_pressed(KeyCode::S) {
         for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
             sink.toggle();

@@ -39,29 +39,39 @@ fn setup(
     mut assets: ResMut<Assets<DspSource>>,
     dsp_manager: Res<DspManager>,
 ) {
-    commands.spawn(
-        (AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(sine_wave).unwrap()
-                               // HACK: This doesn't feel right.
-                               .clone()),
+    commands.spawn((
+        AudioSourceBundle {
+            source: assets.add(
+                dsp_manager
+                    .get_graph(sine_wave)
+                    .unwrap()
+                    // HACK: This doesn't feel right.
+                    .clone(),
+            ),
             settings: PlaybackSettings {
                 paused: false,
                 ..default()
-            }
+            },
         },
-        Dsp::Sine));
+        Dsp::Sine,
+    ));
 
-    commands.spawn(
-        (AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(triangle_wave).unwrap()
-                               // HACK: This doesn't feel right.
-                               .clone()),
+    commands.spawn((
+        AudioSourceBundle {
+            source: assets.add(
+                dsp_manager
+                    .get_graph(triangle_wave)
+                    .unwrap()
+                    // HACK: This doesn't feel right.
+                    .clone(),
+            ),
             settings: PlaybackSettings {
                 paused: true,
                 ..default()
-            }
+            },
         },
-        Dsp::Triangle));
+        Dsp::Triangle,
+    ));
 }
 
 fn interactive_audio(
