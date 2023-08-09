@@ -3,7 +3,7 @@
 
 use {
     crate::dsp_graph::DspGraph,
-    bevy::reflect::TypeUuid,
+    bevy::reflect::{TypeUuid, TypePath},
     fundsp::{hacker32::AudioUnit32, wave::Wave32},
     std::{cell::RefCell, sync::Arc},
 };
@@ -12,7 +12,7 @@ use {
 ///
 /// These can be played directly when the [`SourceType`] is dynamic,
 /// otherwise, the DSP source must be played with a given duration.
-#[derive(TypeUuid, Clone)]
+#[derive(TypeUuid, Clone, TypePath)]
 #[uuid = "107a9069-d37d-46a8-92f2-23ec23b73bf6"]
 pub struct DspSource {
     pub(crate) dsp_graph: Arc<dyn DspGraph>,
@@ -43,7 +43,11 @@ pub enum SourceType {
 }
 
 impl DspSource {
-    pub(crate) fn new<D: DspGraph>(
+    // HACK: Made new public for interactive_component. Not a real suggested change.
+    //
+    // Left the missing doc warning in here so this gets noticed.
+    // pub(crate) fn new<D: DspGraph>(
+    pub fn new<D: DspGraph>(
         dsp_graph: D,
         sample_rate: f32,
         source_type: SourceType,

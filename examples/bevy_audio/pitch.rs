@@ -5,8 +5,8 @@ use {bevy::prelude::*, bevy_fundsp::prelude::*, uuid::Uuid};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin::default())
-        .add_plugin(PianoPlugin)
+        .add_plugins(DspPlugin::default())
+        .add_plugins(PianoPlugin)
         .run();
 }
 
@@ -89,8 +89,8 @@ impl Plugin for PianoPlugin {
         app.add_dsp_source(piano_dsp, SourceType::Dynamic)
             .insert_resource(PitchVar(pitch))
             .insert_resource(PianoId(piano_id))
-            .add_system(switch_key)
-            .add_startup_system(play_piano.in_base_set(StartupSet::PostStartup));
+            .add_systems(Update, switch_key)
+            .add_systems(PostStartup, play_piano);
     }
 }
 
@@ -116,13 +116,23 @@ fn switch_key(input: Res<Input<KeyCode>>, pitch_var: Res<PitchVar>) {
 }
 
 fn play_piano(
+    mut commands: Commands,
     mut assets: ResMut<Assets<DspSource>>,
     dsp_manager: Res<DspManager>,
-    mut audio: ResMut<Audio<DspSource>>,
     piano_id: Res<PianoId>,
 ) {
-    let source = dsp_manager
+    // let source = dsp_manager
+    //     .get_graph_by_id(&piano_id.0)
+    //     .unwrap_or_else(|| panic!("DSP source not found!"));
+    // audio.play_dsp(assets.as_mut(), source);
+
+    let source = assets.add(dsp_manager
         .get_graph_by_id(&piano_id.0)
-        .unwrap_or_else(|| panic!("DSP source not found!"));
-    audio.play_dsp(assets.as_mut(), source);
+        .unwrap_or_else(|| panic!("DSP source not found!"))
+                            // HACK: Not sure about this clone.
+                            .clone());
+    commands.spawn(AudioSourceBundle {
+        source,
+        ..default()
+    });
 }

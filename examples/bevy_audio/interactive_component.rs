@@ -2,17 +2,17 @@
 
 use {bevy::prelude::*, bevy_fundsp::prelude::*};
 
-/// This is the most direct way to use Bevy 0.11 with bevy_audio but the
-/// dsp_manager feels a little strained since you can add a DspSource directly
-/// as an asset now.
+/// This is an experiment to try and avoid the .clone() that is happening in
+/// interactive.rs.
 ///
-/// I tried an experiment to avoid the .clone() in interactive_component.rs.
+/// I'd prefer keeping .add_dsp_source(). Maybe an idea for moving forward would be
+/// to have DspManager keep handles to the assets?
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(DspPlugin::default())
-        .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
-        .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
+        // .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
+        // .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
         .add_systems(Startup, setup)
         .add_systems(Update, interactive_audio)
         .run();
@@ -37,13 +37,11 @@ enum Dsp {
 fn setup(
     mut commands: Commands,
     mut assets: ResMut<Assets<DspSource>>,
-    dsp_manager: Res<DspManager>,
 ) {
+    let sample_rate = 44_100.0; // This should come from somewhere else.
     commands.spawn(
         (AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(sine_wave).unwrap()
-                               // HACK: This doesn't feel right.
-                               .clone()),
+            source: assets.add(DspSource::new(sine_wave, sample_rate, SourceType::Static { duration: 0.5 })),
             settings: PlaybackSettings {
                 paused: false,
                 ..default()
@@ -53,9 +51,7 @@ fn setup(
 
     commands.spawn(
         (AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(triangle_wave).unwrap()
-                               // HACK: This doesn't feel right.
-                               .clone()),
+            source: assets.add(DspSource::new(triangle_wave, sample_rate, SourceType::Static { duration: 0.5 })),
             settings: PlaybackSettings {
                 paused: true,
                 ..default()
@@ -65,18 +61,17 @@ fn setup(
 }
 
 fn interactive_audio(
-    mut commands: Commands,
     input: Res<Input<KeyCode>>,
     mut query: Query<(&mut AudioSink, &Dsp)>,
 ) {
     if input.just_pressed(KeyCode::S) {
-        for (sink, _) in query.iter_mut().filter(|(s, d)| **d == Dsp::Sine) {
+        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
             sink.toggle();
         }
     }
 
     if input.just_pressed(KeyCode::T) {
-        for (sink, _) in query.iter_mut().filter(|(s, d)| **d == Dsp::Triangle) {
+        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Triangle) {
             sink.toggle();
         }
     }

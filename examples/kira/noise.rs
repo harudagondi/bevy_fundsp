@@ -5,10 +5,10 @@ use {bevy::prelude::*, bevy_fundsp::prelude::*, bevy_kira_audio::prelude::*};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin)
-        .add_plugin(DspPlugin::default())
+        .add_plugins(AudioPlugin)
+        .add_plugins(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Static { duration: 60.0 })
-        .add_startup_system(play_noise.in_base_set(StartupSet::PostStartup))
+        .add_systems(Startup, play_noise)
         .run();
 }
 
@@ -19,7 +19,7 @@ fn white_noise() -> impl AudioUnit32 {
 fn play_noise(
     mut assets: ResMut<Assets<AudioSource>>,
     dsp_manager: Res<DspManager>,
-    audio: ResMut<Audio>,
+    audio: Res<Audio>,
 ) {
     let source = dsp_manager
         .get_graph(white_noise)
