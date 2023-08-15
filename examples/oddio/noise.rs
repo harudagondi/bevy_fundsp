@@ -9,10 +9,10 @@ use {
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin::new())
-        .add_plugin(DspPlugin::default())
+        .add_plugins(AudioPlugin::new())
+        .add_plugins(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Dynamic)
-        .add_startup_system(play_noise.in_base_set(StartupSet::PostStartup))
+        .add_systems(PostStartup, play_noise)
         .run();
 }
 

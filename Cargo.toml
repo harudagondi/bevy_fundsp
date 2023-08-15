@@ -48,7 +48,7 @@ optional = true
 [dependencies.bevy_oddio]
 # git = "https://github.com/harudagondi/bevy_oddio"
 # branch = "bevy_main"
-version = "0.4"
+version = "0.5"
 default-features = false
 optional = true
 features = ["wav"]
