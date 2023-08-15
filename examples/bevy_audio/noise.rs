@@ -19,7 +19,6 @@ fn play_noise(
     mut commands: Commands,
     mut assets: ResMut<Assets<DspSource>>,
     dsp_manager: Res<DspManager>,
-    // mut audio: ResMut<Audio<DspSource>>,
 ) {
     let source = assets.add(
         dsp_manager
@@ -32,5 +31,4 @@ fn play_noise(
         source,
         ..default()
     });
-    // audio.play_dsp(assets.as_mut(), source);
 }

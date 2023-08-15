@@ -75,18 +75,17 @@ fn setup(
 }
 
 fn interactive_audio(
-    mut commands: Commands,
     input: Res<Input<KeyCode>>,
     mut query: Query<(&mut AudioSink, &Dsp)>,
 ) {
     if input.just_pressed(KeyCode::S) {
-        for (sink, _) in query.iter_mut().filter(|(s, d)| **d == Dsp::Sine) {
+        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
             sink.toggle();
         }
     }
 
     if input.just_pressed(KeyCode::T) {
-        for (sink, _) in query.iter_mut().filter(|(s, d)| **d == Dsp::Triangle) {
+        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Triangle) {
             sink.toggle();
         }
     }
