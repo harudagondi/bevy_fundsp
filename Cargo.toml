@@ -86,11 +86,6 @@ path = "examples/bevy_audio/interactive.rs"
 required-features = ["bevy_audio"]
 
 [[example]]
-name = "interactive_component"
-path = "examples/bevy_audio/interactive_component.rs"
-required-features = ["bevy_audio"]
-
-[[example]]
 name = "pitch"
 path = "examples/bevy_audio/pitch.rs"
 required-features = ["bevy_audio"]
