@@ -43,11 +43,7 @@ pub enum SourceType {
 }
 
 impl DspSource {
-    // HACK: Made new public for interactive_component. Not a real suggested change.
-    //
-    // Left the missing doc warning in here so this gets noticed.
-    // pub(crate) fn new<D: DspGraph>(
-    pub fn new<D: DspGraph>(dsp_graph: D, sample_rate: f32, source_type: SourceType) -> Self {
+    pub(crate) fn new<D: DspGraph>(dsp_graph: D, sample_rate: f32, source_type: SourceType) -> Self {
         Self {
             dsp_graph: Arc::new(dsp_graph),
             sample_rate,
