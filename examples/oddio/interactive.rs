@@ -9,11 +9,11 @@ use {
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin::new())
-        .add_plugin(DspPlugin::default())
+        .add_plugins(AudioPlugin::new())
+        .add_plugins(DspPlugin::default())
         .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
         .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
-        .add_system(interactive_audio)
+        .add_systems(Update, interactive_audio)
         .run();
 }
 
@@ -34,13 +34,13 @@ fn interactive_audio(
     mut audio: ResMut<Audio<[f32; 2], AudioSource<[f32; 2]>>>,
 ) {
     if input.just_pressed(KeyCode::S) {
-        audio.play_dsp(assets.as_mut(), dsp_manager.get_graph(sine_wave).unwrap());
+        audio.play_dsp(assets.as_mut(), &dsp_manager.get_graph(sine_wave).unwrap());
     }
 
     if input.just_pressed(KeyCode::T) {
         audio.play_dsp(
             assets.as_mut(),
-            dsp_manager.get_graph(triangle_wave).unwrap(),
+            &dsp_manager.get_graph(triangle_wave).unwrap(),
         );
     }
 }

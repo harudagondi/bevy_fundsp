@@ -46,15 +46,15 @@ impl DspManager {
 
     /// Get the DSP source given a DSP graph.
     #[allow(clippy::needless_pass_by_value)]
-    pub fn get_graph<D: DspGraph>(&self, dsp_graph: D) -> Option<&DspSource> {
-        self.collection.get(&dsp_graph.id())
+    pub fn get_graph<D: DspGraph>(&self, dsp_graph: D) -> Option<DspSource> {
+        self.collection.get(&dsp_graph.id()).cloned()
     }
 
     /// Get the DSP source given a UUID of the DSP graph.
     ///
     /// Useful if you cannot use the DSP graph directly.
     #[must_use]
-    pub fn get_graph_by_id(&self, uuid: &Uuid) -> Option<&DspSource> {
-        self.collection.get(uuid)
+    pub fn get_graph_by_id(&self, uuid: &Uuid) -> Option<DspSource> {
+        self.collection.get(uuid).cloned()
     }
 }

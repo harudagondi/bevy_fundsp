@@ -1,14 +1,11 @@
 //! Implementation to integrate `bevy_fundsp` into `bevy_audio`.
 
 use {
-    super::{Backend, DspAudioExt},
+    super::Backend,
     crate::dsp_source::{DspSource, IterMono},
     bevy::{
-        audio::{play_queued_audio_system, AudioSink},
-        prelude::{
-            App, Assets, Audio, AudioOutput, AudioSource, CoreSet, Decodable, Handle,
-            IntoSystemConfig, PlaybackSettings,
-        },
+        audio::AddAudioSource,
+        prelude::{App, AudioSource, Decodable},
     },
 };
 
@@ -48,9 +45,7 @@ impl Backend for BevyAudioBackend {
     type StaticAudioSource = AudioSource;
 
     fn init_app(app: &mut App) {
-        app.init_resource::<Audio<DspSource>>()
-            .init_resource::<AudioOutput<DspSource>>()
-            .add_system(play_queued_audio_system::<DspSource>.in_base_set(CoreSet::PostUpdate));
+        app.add_audio_source::<DspSource>();
     }
 
     fn convert_to_audio_source(
@@ -62,35 +57,37 @@ impl Backend for BevyAudioBackend {
     }
 }
 
-impl DspAudioExt for Audio<AudioSource> {
-    type Assets = Assets<AudioSource>;
-    type Settings = PlaybackSettings;
-    type Sink = Handle<AudioSink>;
+// fn play_queued_audio
 
-    fn play_dsp_with_settings(
-        &mut self,
-        assets: &mut Self::Assets,
-        source: &DspSource,
-        settings: Self::Settings,
-    ) -> Self::Sink {
-        let audio = BevyAudioBackend::convert_to_audio_source(source.clone());
-        let handle = assets.add(audio);
-        self.play_with_settings(handle, settings)
-    }
-}
+// impl DspAudioExt for Audio<AudioSource> {
+//     type Assets = Assets<AudioSource>;
+//     type Settings = PlaybackSettings;
+//     // type Sink = Handle<AudioSink>;
 
-impl DspAudioExt for Audio<DspSource> {
-    type Assets = Assets<DspSource>;
-    type Settings = PlaybackSettings;
-    type Sink = Handle<AudioSink>;
+//     fn play_dsp_with_settings(
+//         &mut self,
+//         assets: &mut Self::Assets,
+//         source: &DspSource,
+//         settings: Self::Settings,
+//     ) -> Self::Sink {
+//         let audio = BevyAudioBackend::convert_to_audio_source(source.clone());
+//         let handle = assets.add(audio);
+//         self.play_with_settings(handle, settings)
+//     }
+// }
 
-    fn play_dsp_with_settings(
-        &mut self,
-        assets: &mut Self::Assets,
-        source: &DspSource,
-        settings: Self::Settings,
-    ) -> Self::Sink {
-        let handle = assets.add(source.clone());
-        self.play_with_settings(handle, settings)
-    }
-}
+// impl DspAudioExt for DspSource {
+//     type Assets = Assets<DspSource>;
+//     type Settings = PlaybackSettings;
+//     type Sink = AudioSink;
+
+//     fn play_dsp_with_settings(
+//         &mut self,
+//         assets: &mut Self::Assets,
+//         source: &DspSource,
+//         settings: Self::Settings,
+//     ) -> Self::Sink {
+//         let handle = assets.add(source.clone());
+//         self.play_with_settings(handle, settings)
+//     }
+// }

@@ -5,10 +5,11 @@ use {bevy::prelude::*, bevy_fundsp::prelude::*};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin::default())
+        .add_plugins(DspPlugin::default())
         .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
         .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
-        .add_system(interactive_audio)
+        .add_systems(Startup, setup)
+        .add_systems(Update, interactive_audio)
         .run();
 }
 
@@ -22,20 +23,50 @@ fn triangle_wave() -> impl AudioUnit32 {
     triangle_hz(392.0) >> split::<U2>() * 0.2
 }
 
-fn interactive_audio(
-    input: Res<Input<KeyCode>>,
-    mut assets: ResMut<Assets<AudioSource>>,
+#[derive(Component, Clone, Copy, PartialEq)]
+enum Dsp {
+    Sine,
+    Triangle,
+}
+
+fn setup(
+    mut commands: Commands,
+    mut assets: ResMut<Assets<DspSource>>,
     dsp_manager: Res<DspManager>,
-    mut audio: ResMut<Audio>,
 ) {
+    commands.spawn((
+        AudioSourceBundle {
+            source: assets.add(dsp_manager.get_graph(sine_wave).unwrap()),
+            settings: PlaybackSettings {
+                paused: false,
+                ..default()
+            },
+        },
+        Dsp::Sine,
+    ));
+
+    commands.spawn((
+        AudioSourceBundle {
+            source: assets.add(dsp_manager.get_graph(triangle_wave).unwrap()),
+            settings: PlaybackSettings {
+                paused: true,
+                ..default()
+            },
+        },
+        Dsp::Triangle,
+    ));
+}
+
+fn interactive_audio(input: Res<Input<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
     if input.just_pressed(KeyCode::S) {
-        audio.play_dsp(assets.as_mut(), dsp_manager.get_graph(sine_wave).unwrap());
+        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
+            sink.toggle();
+        }
     }
 
     if input.just_pressed(KeyCode::T) {
-        audio.play_dsp(
-            assets.as_mut(),
-            dsp_manager.get_graph(triangle_wave).unwrap(),
-        );
+        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Triangle) {
+            sink.toggle();
+        }
     }
 }

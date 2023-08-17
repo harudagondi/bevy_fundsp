@@ -3,7 +3,7 @@
 
 use {
     crate::dsp_graph::DspGraph,
-    bevy::reflect::TypeUuid,
+    bevy::reflect::{TypePath, TypeUuid},
     fundsp::{hacker32::AudioUnit32, wave::Wave32},
     std::{cell::RefCell, sync::Arc},
 };
@@ -12,7 +12,7 @@ use {
 ///
 /// These can be played directly when the [`SourceType`] is dynamic,
 /// otherwise, the DSP source must be played with a given duration.
-#[derive(TypeUuid, Clone)]
+#[derive(TypeUuid, Clone, TypePath)]
 #[uuid = "107a9069-d37d-46a8-92f2-23ec23b73bf6"]
 pub struct DspSource {
     pub(crate) dsp_graph: Arc<dyn DspGraph>,
@@ -137,8 +137,7 @@ impl Source for Iter {
     }
 
     fn sample(&self) -> Self::Frame {
-        let frame = self.audio_unit.borrow_mut().get_stereo();
-        [frame.0, frame.1]
+        self.audio_unit.borrow_mut().get_stereo().into()
     }
 }
 

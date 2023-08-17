@@ -5,11 +5,11 @@ use {bevy::prelude::*, bevy_fundsp::prelude::*, bevy_kira_audio::prelude::*};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(AudioPlugin)
-        .add_plugin(DspPlugin::default())
+        .add_plugins(AudioPlugin)
+        .add_plugins(DspPlugin::default())
         .add_dsp_source(sine_wave, SourceType::Static { duration: 0.5 })
         .add_dsp_source(triangle_wave, SourceType::Static { duration: 0.5 })
-        .add_system(interactive_audio)
+        .add_systems(Update, interactive_audio)
         .run();
 }
 

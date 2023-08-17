@@ -59,9 +59,8 @@ impl DspSource {
 
         let number_of_frames = (self.sample_rate * duration).round() as usize;
 
-        let collection = (0..number_of_frames)
-            .map(|_| audio_unit.clone().borrow_mut().get_stereo())
-            .map(|frame| [frame.0, frame.1]);
+        let collection =
+            (0..number_of_frames).map(|_| audio_unit.clone().borrow_mut().get_stereo().into());
 
         ExactSizeIter {
             sample_rate: self.sample_rate,

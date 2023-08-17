@@ -5,9 +5,9 @@ use {bevy::prelude::*, bevy_fundsp::prelude::*};
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_plugin(DspPlugin::default())
+        .add_plugins(DspPlugin::default())
         .add_dsp_source(white_noise, SourceType::Dynamic)
-        .add_startup_system(play_noise.in_base_set(StartupSet::PostStartup))
+        .add_systems(PostStartup, play_noise)
         .run();
 }
 
@@ -16,12 +16,17 @@ fn white_noise() -> impl AudioUnit32 {
 }
 
 fn play_noise(
+    mut commands: Commands,
     mut assets: ResMut<Assets<DspSource>>,
     dsp_manager: Res<DspManager>,
-    mut audio: ResMut<Audio<DspSource>>,
 ) {
-    let source = dsp_manager
-        .get_graph(white_noise)
-        .unwrap_or_else(|| panic!("DSP source not found!"));
-    audio.play_dsp(assets.as_mut(), source);
+    let source = assets.add(
+        dsp_manager
+            .get_graph(white_noise)
+            .unwrap_or_else(|| panic!("DSP source not found!")),
+    );
+    commands.spawn(AudioSourceBundle {
+        source,
+        ..default()
+    });
 }
