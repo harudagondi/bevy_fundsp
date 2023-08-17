@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 17-08-2023
+
+Updated bevy and other crate dependencies.
+
 ## [0.3.0] - 14-11-2022
 
 Updated bevy and other crate dependencies.
