@@ -28,5 +28,5 @@ fn play_noise(
     let source = dsp_manager
         .get_graph(white_noise)
         .unwrap_or_else(|| panic!("DSP source not found!"));
-    audio.play_dsp(assets.as_mut(), source);
+    audio.play_dsp(assets.as_mut(), &source);
 }

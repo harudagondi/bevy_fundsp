@@ -2,11 +2,6 @@
 
 use {bevy::prelude::*, bevy_fundsp::prelude::*};
 
-/// This is the most direct way to use Bevy 0.11 with bevy_audio but the
-/// dsp_manager feels a little strained since you can add a DspSource directly
-/// as an asset now.
-///
-/// I tried an experiment to avoid the .clone() in interactive_component.rs.
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
@@ -41,13 +36,7 @@ fn setup(
 ) {
     commands.spawn((
         AudioSourceBundle {
-            source: assets.add(
-                dsp_manager
-                    .get_graph(sine_wave)
-                    .unwrap()
-                    // HACK: This doesn't feel right.
-                    .clone(),
-            ),
+            source: assets.add(dsp_manager.get_graph(sine_wave).unwrap()),
             settings: PlaybackSettings {
                 paused: false,
                 ..default()
@@ -58,13 +47,7 @@ fn setup(
 
     commands.spawn((
         AudioSourceBundle {
-            source: assets.add(
-                dsp_manager
-                    .get_graph(triangle_wave)
-                    .unwrap()
-                    // HACK: This doesn't feel right.
-                    .clone(),
-            ),
+            source: assets.add(dsp_manager.get_graph(triangle_wave).unwrap()),
             settings: PlaybackSettings {
                 paused: true,
                 ..default()
@@ -74,10 +57,7 @@ fn setup(
     ));
 }
 
-fn interactive_audio(
-    input: Res<Input<KeyCode>>,
-    mut query: Query<(&mut AudioSink, &Dsp)>,
-) {
+fn interactive_audio(input: Res<Input<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
     if input.just_pressed(KeyCode::S) {
         for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
             sink.toggle();

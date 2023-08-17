@@ -121,17 +121,10 @@ fn play_piano(
     dsp_manager: Res<DspManager>,
     piano_id: Res<PianoId>,
 ) {
-    // let source = dsp_manager
-    //     .get_graph_by_id(&piano_id.0)
-    //     .unwrap_or_else(|| panic!("DSP source not found!"));
-    // audio.play_dsp(assets.as_mut(), source);
-
     let source = assets.add(
         dsp_manager
             .get_graph_by_id(&piano_id.0)
-            .unwrap_or_else(|| panic!("DSP source not found!"))
-            // HACK: Not sure about this clone.
-            .clone(),
+            .unwrap_or_else(|| panic!("DSP source not found!")),
     );
     commands.spawn(AudioSourceBundle {
         source,

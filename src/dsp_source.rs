@@ -43,7 +43,11 @@ pub enum SourceType {
 }
 
 impl DspSource {
-    pub(crate) fn new<D: DspGraph>(dsp_graph: D, sample_rate: f32, source_type: SourceType) -> Self {
+    pub(crate) fn new<D: DspGraph>(
+        dsp_graph: D,
+        sample_rate: f32,
+        source_type: SourceType,
+    ) -> Self {
         Self {
             dsp_graph: Arc::new(dsp_graph),
             sample_rate,
@@ -133,8 +137,7 @@ impl Source for Iter {
     }
 
     fn sample(&self) -> Self::Frame {
-        let frame = self.audio_unit.borrow_mut().get_stereo();
-        [frame.0, frame.1]
+        self.audio_unit.borrow_mut().get_stereo().into()
     }
 }
 

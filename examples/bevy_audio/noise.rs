@@ -23,9 +23,7 @@ fn play_noise(
     let source = assets.add(
         dsp_manager
             .get_graph(white_noise)
-            .unwrap_or_else(|| panic!("DSP source not found!"))
-            // HACK: I'm cloning here and that may be wrong.
-            .clone(),
+            .unwrap_or_else(|| panic!("DSP source not found!")),
     );
     commands.spawn(AudioSourceBundle {
         source,
