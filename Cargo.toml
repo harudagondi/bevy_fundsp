@@ -33,14 +33,14 @@ features = [
 
 [dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.11"
-default-features = false 
+version = "0.12"
+default-features = false
 features = ["bevy_asset"]
 
 [dependencies.bevy_kira_audio]
 # git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-version = "0.16"
+version = "0.18"
 default-features = false
 features = ["wav"]
 optional = true
@@ -55,7 +55,7 @@ features = ["wav"]
 
 [dev-dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.11"
+version = "0.12"
 default-features = false
 features = [
   "bevy_core_pipeline",
@@ -70,7 +70,7 @@ features = [
   "bevy_gilrs",
   "png",
   "hdr",
-  "filesystem_watcher",
+  "file_watcher",
   "x11"
 ]
 

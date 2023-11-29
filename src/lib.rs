@@ -25,13 +25,13 @@
 //! It is more intuitive to remove the parentheses when writing these types of expressions,
 //! as FunDSP is essentially a domain specific language.
 //! See the [FunDSP] README for more information.
-//!  
+//!
 //! [FunDSP]: https://github.com/SamiPerttu/fundsp
 //! [Bevy]: https://bevyengine.org/
 
 use {
     backend::{Backend, DefaultBackend},
-    bevy::prelude::{AddAsset, App, Plugin},
+    bevy::prelude::{App, AssetApp, Plugin},
     dsp_graph::DspGraph,
     dsp_manager::DspManager,
     dsp_source::{DspSource, SourceType},
@@ -49,8 +49,7 @@ pub mod dsp_source;
 /// # use bevy::prelude::*;
 /// # use bevy_fundsp::prelude::*;
 /// App::new()
-///     .add_plugins(DefaultPlugins)
-///     .add_plugin(DspPlugin::default())
+///     .add_plugins((DefaultPlugins, DspPlugin::default()))
 ///     .run()
 /// ```
 pub struct DspPlugin {
@@ -70,8 +69,7 @@ impl DspPlugin {
     /// # use bevy::prelude::*;
     /// # use bevy_fundsp::prelude::*;
     /// App::new()
-    ///     .add_plugins(DefaultPlugins)
-    ///     .add_plugin(DspPlugin::new(44100.0))
+    ///     .add_plugins((DefaultPlugins, DspPlugin::new(44100.0)))
     ///     .run()
     /// ```
     #[allow(clippy::must_use_candidate)]
@@ -89,7 +87,7 @@ impl Default for DspPlugin {
 impl Plugin for DspPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DspManager::new(self.sample_rate))
-            .add_asset::<DspSource>();
+            .init_asset::<DspSource>();
 
         DefaultBackend::init_app(app);
     }
@@ -105,8 +103,7 @@ pub trait DspAppExt {
     /// # use bevy::prelude::*;
     /// # use bevy_fundsp::prelude::*;
     /// App::new()
-    ///     .add_plugins(DefaultPlugins)
-    ///     .add_plugin(DspPlugin::default())
+    ///     .add_plugins((DefaultPlugins, DspPlugin::default()))
     ///     .add_dsp_source(a_simple_440hz_sine_wave, SourceType::Dynamic)
     ///     .run();
     ///
