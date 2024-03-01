@@ -1,9 +1,10 @@
 //! Module for [`DspSource`],
 //! a type that is analogous to `AudioSource` in `bevy_audio`.
 
+use bevy::asset::Asset;
 use {
     crate::dsp_graph::DspGraph,
-    bevy::reflect::{TypePath, TypeUuid},
+    bevy::reflect::{TypePath},
     fundsp::{hacker32::AudioUnit32, wave::Wave32},
     std::{cell::RefCell, sync::Arc},
 };
@@ -12,8 +13,7 @@ use {
 ///
 /// These can be played directly when the [`SourceType`] is dynamic,
 /// otherwise, the DSP source must be played with a given duration.
-#[derive(TypeUuid, Clone, TypePath)]
-#[uuid = "107a9069-d37d-46a8-92f2-23ec23b73bf6"]
+#[derive(Clone, TypePath, Asset)]
 pub struct DspSource {
     pub(crate) dsp_graph: Arc<dyn DspGraph>,
     pub(crate) sample_rate: f32,

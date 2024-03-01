@@ -70,6 +70,7 @@ features = [
   "png",
   "hdr",
   "file_watcher",
+  "multi-threaded",
   "x11"
 ]
 
