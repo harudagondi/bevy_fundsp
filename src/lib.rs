@@ -29,9 +29,10 @@
 //! [FunDSP]: https://github.com/SamiPerttu/fundsp
 //! [Bevy]: https://bevyengine.org/
 
+use bevy::asset::AssetApp;
 use {
     backend::{Backend, DefaultBackend},
-    bevy::prelude::{AddAsset, App, Plugin},
+    bevy::prelude::{App, Plugin},
     dsp_graph::DspGraph,
     dsp_manager::DspManager,
     dsp_source::{DspSource, SourceType},
@@ -89,7 +90,7 @@ impl Default for DspPlugin {
 impl Plugin for DspPlugin {
     fn build(&self, app: &mut App) {
         app.insert_resource(DspManager::new(self.sample_rate))
-            .add_asset::<DspSource>();
+            .init_asset::<DspSource>();
 
         DefaultBackend::init_app(app);
     }

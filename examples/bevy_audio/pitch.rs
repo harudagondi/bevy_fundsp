@@ -94,25 +94,25 @@ impl Plugin for PianoPlugin {
     }
 }
 
-fn switch_key(input: Res<Input<KeyCode>>, pitch_var: Res<PitchVar>) {
+fn switch_key(input: Res<ButtonInput<KeyCode>>, pitch_var: Res<PitchVar>) {
     let keypress = |keycode, pitch| {
         if input.just_pressed(keycode) {
             pitch_var.set_pitch(pitch)
         }
     };
 
-    keypress(KeyCode::A, Pitch::C);
-    keypress(KeyCode::W, Pitch::Cs);
-    keypress(KeyCode::S, Pitch::D);
-    keypress(KeyCode::E, Pitch::Ds);
-    keypress(KeyCode::D, Pitch::E);
-    keypress(KeyCode::F, Pitch::F);
-    keypress(KeyCode::T, Pitch::Fs);
-    keypress(KeyCode::G, Pitch::G);
-    keypress(KeyCode::Y, Pitch::Gs);
-    keypress(KeyCode::H, Pitch::A);
-    keypress(KeyCode::U, Pitch::As);
-    keypress(KeyCode::J, Pitch::B);
+    keypress(KeyCode::KeyA, Pitch::C);
+    keypress(KeyCode::KeyW, Pitch::Cs);
+    keypress(KeyCode::KeyS, Pitch::D);
+    keypress(KeyCode::KeyE, Pitch::Ds);
+    keypress(KeyCode::KeyD, Pitch::E);
+    keypress(KeyCode::KeyF, Pitch::F);
+    keypress(KeyCode::KeyT, Pitch::Fs);
+    keypress(KeyCode::KeyG, Pitch::G);
+    keypress(KeyCode::KeyY, Pitch::Gs);
+    keypress(KeyCode::KeyH, Pitch::A);
+    keypress(KeyCode::KeyU, Pitch::As);
+    keypress(KeyCode::KeyJ, Pitch::B);
 }
 
 fn play_piano(
