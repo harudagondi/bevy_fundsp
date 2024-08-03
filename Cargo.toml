@@ -1,7 +1,7 @@
 [package]
 name = "bevy_fundsp"
 authors = ["Gio Genre De Asis"]
-version = "0.4.0"
+version = "0.5.0"
 edition = "2021"
 description = "A Bevy plugin that integrates FunDSP into Bevy."
 homepage = "https://github.com/harudagondi/bevy_fundsp"
@@ -15,14 +15,13 @@ categories = ["game-development", "multimedia::audio"]
 [features]
 default = ["bevy_audio"]
 kira = ["dep:kira", "bevy_kira_audio"]
-bevy_audio = ["bevy/bevy_audio", "bevy/wav", "rodio"]
+bevy_audio = ["bevy/bevy_audio", "bevy/wav"]
 oddio = ["bevy_oddio"]
 
 [dependencies]
-fundsp = "0.15"
+fundsp = "0.18"
 cpal = "0.15"
 once_cell = "1.13"
-rodio = { version = "0.17.1", default-features = false, features = ["wav"], optional = true }
 kira = { version = "0.8", default-features = false, features = ["wav"], optional = true }
 
 [dependencies.uuid]
@@ -33,14 +32,14 @@ features = [
 
 [dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.11"
+version = "0.14"
 default-features = false 
 features = ["bevy_asset"]
 
 [dependencies.bevy_kira_audio]
 # git = "https://github.com/NiklasEi/bevy_kira_audio.git"
 # branch = "bevy_main"
-version = "0.16"
+version = "0.20"
 default-features = false
 features = ["wav"]
 optional = true
@@ -55,7 +54,7 @@ features = ["wav"]
 
 [dev-dependencies.bevy]
 # git = "https://github.com/bevyengine/bevy"
-version = "0.11"
+version = "0.14"
 default-features = false
 features = [
   "bevy_core_pipeline",
@@ -70,7 +69,8 @@ features = [
   "bevy_gilrs",
   "png",
   "hdr",
-  "filesystem_watcher",
+  "file_watcher",
+  "multi_threaded",
   "x11"
 ]
 

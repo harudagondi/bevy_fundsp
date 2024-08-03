@@ -14,12 +14,12 @@ struct PianoPlugin;
 
 struct PianoDsp<F>(F);
 
-impl<T: AudioUnit32 + 'static, F: Send + Sync + 'static + Fn() -> T> DspGraph for PianoDsp<F> {
+impl<T: AudioUnit + 'static, F: Send + Sync + 'static + Fn() -> T> DspGraph for PianoDsp<F> {
     fn id(&self) -> Uuid {
         Uuid::from_u128(0xa1a2a3a4b1b2c1c2d1d2d3d4d5d6d7d8u128)
     }
 
-    fn generate_graph(&self) -> Box<dyn AudioUnit32> {
+    fn generate_graph(&self) -> Box<dyn AudioUnit> {
         Box::new((self.0)())
     }
 }
@@ -28,7 +28,7 @@ impl<T: AudioUnit32 + 'static, F: Send + Sync + 'static + Fn() -> T> DspGraph fo
 struct PianoId(Uuid);
 
 #[derive(Resource)]
-struct PitchVar(Shared<f32>);
+struct PitchVar(Shared);
 
 impl PitchVar {
     fn set_pitch(&self, pitch: Pitch) {
@@ -94,25 +94,25 @@ impl Plugin for PianoPlugin {
     }
 }
 
-fn switch_key(input: Res<Input<KeyCode>>, pitch_var: Res<PitchVar>) {
+fn switch_key(input: Res<ButtonInput<KeyCode>>, pitch_var: Res<PitchVar>) {
     let keypress = |keycode, pitch| {
         if input.just_pressed(keycode) {
             pitch_var.set_pitch(pitch)
         }
     };
 
-    keypress(KeyCode::A, Pitch::C);
-    keypress(KeyCode::W, Pitch::Cs);
-    keypress(KeyCode::S, Pitch::D);
-    keypress(KeyCode::E, Pitch::Ds);
-    keypress(KeyCode::D, Pitch::E);
-    keypress(KeyCode::F, Pitch::F);
-    keypress(KeyCode::T, Pitch::Fs);
-    keypress(KeyCode::G, Pitch::G);
-    keypress(KeyCode::Y, Pitch::Gs);
-    keypress(KeyCode::H, Pitch::A);
-    keypress(KeyCode::U, Pitch::As);
-    keypress(KeyCode::J, Pitch::B);
+    keypress(KeyCode::KeyA, Pitch::C);
+    keypress(KeyCode::KeyW, Pitch::Cs);
+    keypress(KeyCode::KeyS, Pitch::D);
+    keypress(KeyCode::KeyE, Pitch::Ds);
+    keypress(KeyCode::KeyD, Pitch::E);
+    keypress(KeyCode::KeyF, Pitch::F);
+    keypress(KeyCode::KeyT, Pitch::Fs);
+    keypress(KeyCode::KeyG, Pitch::G);
+    keypress(KeyCode::KeyY, Pitch::Gs);
+    keypress(KeyCode::KeyH, Pitch::A);
+    keypress(KeyCode::KeyU, Pitch::As);
+    keypress(KeyCode::KeyJ, Pitch::B);
 }
 
 fn play_piano(

@@ -22,7 +22,7 @@ impl Decodable for DspSource {
     }
 }
 
-impl rodio::Source for IterMono {
+impl bevy::audio::Source for IterMono {
     fn current_frame_len(&self) -> Option<usize> {
         None
     }

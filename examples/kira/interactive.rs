@@ -13,23 +13,23 @@ fn main() {
         .run();
 }
 
-fn sine_wave() -> impl AudioUnit32 {
+fn sine_wave() -> impl AudioUnit {
     // Note is A4
     sine_hz(440.0) >> split::<U2>() * 0.2
 }
 
-fn triangle_wave() -> impl AudioUnit32 {
+fn triangle_wave() -> impl AudioUnit {
     // Note is G4
     triangle_hz(392.0) >> split::<U2>() * 0.2
 }
 
 fn interactive_audio(
-    input: Res<Input<KeyCode>>,
+    input: Res<ButtonInput<KeyCode>>,
     mut assets: ResMut<Assets<AudioSource>>,
     dsp_manager: Res<DspManager>,
     audio: ResMut<Audio>,
 ) {
-    if input.just_pressed(KeyCode::S) {
+    if input.just_pressed(KeyCode::KeyS) {
         let source = dsp_manager
             .get_graph(sine_wave)
             .unwrap_or_else(|| panic!("DSP source not found!"));
@@ -38,7 +38,7 @@ fn interactive_audio(
         audio.play(audio_source);
     }
 
-    if input.just_pressed(KeyCode::T) {
+    if input.just_pressed(KeyCode::KeyT) {
         let source = dsp_manager
             .get_graph(triangle_wave)
             .unwrap_or_else(|| panic!("DSP source not found!"));

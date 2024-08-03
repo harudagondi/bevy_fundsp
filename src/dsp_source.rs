@@ -3,8 +3,8 @@
 
 use {
     crate::dsp_graph::DspGraph,
-    bevy::reflect::{TypePath, TypeUuid},
-    fundsp::{hacker32::AudioUnit32, wave::Wave32},
+    bevy::{asset::Asset, reflect::TypePath},
+    fundsp::{hacker32::AudioUnit, wave::Wave},
     std::{cell::RefCell, sync::Arc},
 };
 
@@ -12,8 +12,7 @@ use {
 ///
 /// These can be played directly when the [`SourceType`] is dynamic,
 /// otherwise, the DSP source must be played with a given duration.
-#[derive(TypeUuid, Clone, TypePath)]
-#[uuid = "107a9069-d37d-46a8-92f2-23ec23b73bf6"]
+#[derive(Clone, TypePath, Asset)]
 pub struct DspSource {
     pub(crate) dsp_graph: Arc<dyn DspGraph>,
     pub(crate) sample_rate: f32,
@@ -71,7 +70,7 @@ impl DspSource {
 
         let mut node = self.dsp_graph.generate_graph();
 
-        let wave = Wave32::render(
+        let wave = Wave::render(
             f64::from(self.sample_rate),
             f64::from(duration),
             node.as_mut(),
@@ -104,7 +103,7 @@ impl IntoIterator for DspSource {
 /// This is infinite, and would never return `None`.
 pub struct Iter {
     pub(crate) sample_rate: f32,
-    pub(crate) audio_unit: RefCell<Box<dyn AudioUnit32>>,
+    pub(crate) audio_unit: RefCell<Box<dyn AudioUnit>>,
 }
 
 pub(crate) trait Source {
