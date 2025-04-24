@@ -13,12 +13,12 @@ fn main() {
         .run();
 }
 
-fn sine_wave() -> impl AudioUnit32 {
+fn sine_wave() -> impl AudioUnit {
     // Note is A4
     sine_hz(440.0) >> split::<U2>() * 0.2
 }
 
-fn triangle_wave() -> impl AudioUnit32 {
+fn triangle_wave() -> impl AudioUnit {
     // Note is G4
     triangle_hz(392.0) >> split::<U2>() * 0.2
 }
@@ -35,38 +35,34 @@ fn setup(
     dsp_manager: Res<DspManager>,
 ) {
     commands.spawn((
-        AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(sine_wave).unwrap()),
-            settings: PlaybackSettings {
-                paused: false,
-                ..default()
-            },
-        },
+        AudioPlayer(assets.add(dsp_manager.get_graph(sine_wave).unwrap())),
         Dsp::Sine,
+        PlaybackSettings {
+            paused: false,
+            ..default()
+        },
     ));
 
     commands.spawn((
-        AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(triangle_wave).unwrap()),
-            settings: PlaybackSettings {
-                paused: true,
-                ..default()
-            },
+        AudioPlayer(assets.add(dsp_manager.get_graph(triangle_wave).unwrap())),
+        PlaybackSettings {
+            paused: true,
+            ..default()
         },
         Dsp::Triangle,
     ));
 }
 
-fn interactive_audio(input: Res<Input<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
-    if input.just_pressed(KeyCode::S) {
+fn interactive_audio(input: Res<ButtonInput<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
+    if input.just_pressed(KeyCode::KeyS) {
         for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
-            sink.toggle();
+            sink.toggle_playback();
         }
     }
 
-    if input.just_pressed(KeyCode::T) {
+    if input.just_pressed(KeyCode::KeyT) {
         for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Triangle) {
-            sink.toggle();
+            sink.toggle_playback();
         }
     }
 }

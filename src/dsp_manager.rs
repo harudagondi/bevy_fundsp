@@ -7,8 +7,8 @@ use {
         DEFAULT_SAMPLE_RATE,
     },
     bevy::{
+        platform::collections::HashMap,
         prelude::{default, Resource},
-        utils::HashMap,
     },
     uuid::Uuid,
 };

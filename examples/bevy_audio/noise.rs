@@ -11,7 +11,7 @@ fn main() {
         .run();
 }
 
-fn white_noise() -> impl AudioUnit32 {
+fn white_noise() -> impl AudioUnit {
     white() >> split::<U2>() * 0.2
 }
 
