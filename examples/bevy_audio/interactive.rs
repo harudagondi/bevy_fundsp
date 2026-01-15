@@ -3,6 +3,10 @@
 use {bevy::prelude::*, bevy_fundsp::prelude::*};
 
 fn main() {
+    println!();
+    println!("Please press S key and T several times...");
+    println!();
+
     App::new()
         .add_plugins(DefaultPlugins)
         .add_plugins(DspPlugin::default())
@@ -13,12 +17,12 @@ fn main() {
         .run();
 }
 
-fn sine_wave() -> impl AudioUnit32 {
+fn sine_wave() -> impl AudioUnit {
     // Note is A4
     sine_hz(440.0) >> split::<U2>() * 0.2
 }
 
-fn triangle_wave() -> impl AudioUnit32 {
+fn triangle_wave() -> impl AudioUnit {
     // Note is G4
     triangle_hz(392.0) >> split::<U2>() * 0.2
 }
@@ -35,38 +39,30 @@ fn setup(
     dsp_manager: Res<DspManager>,
 ) {
     commands.spawn((
-        AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(sine_wave).unwrap()),
-            settings: PlaybackSettings {
-                paused: false,
-                ..default()
-            },
+        AudioPlayer {
+            0: assets.add(dsp_manager.get_graph(sine_wave).unwrap())
         },
         Dsp::Sine,
     ));
 
     commands.spawn((
-        AudioSourceBundle {
-            source: assets.add(dsp_manager.get_graph(triangle_wave).unwrap()),
-            settings: PlaybackSettings {
-                paused: true,
-                ..default()
-            },
+        AudioPlayer {
+            0: assets.add(dsp_manager.get_graph(triangle_wave).unwrap())
         },
         Dsp::Triangle,
     ));
 }
 
-fn interactive_audio(input: Res<Input<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
-    if input.just_pressed(KeyCode::S) {
-        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
-            sink.toggle();
+fn interactive_audio(input: Res<ButtonInput<KeyCode>>, mut query: Query<(&mut AudioSink, &Dsp)>) {
+    if input.just_pressed(KeyCode::KeyS) {
+        for (mut sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Sine) {
+            sink.toggle_mute();
         }
     }
 
-    if input.just_pressed(KeyCode::T) {
-        for (sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Triangle) {
-            sink.toggle();
+    if input.just_pressed(KeyCode::KeyT) {
+        for (mut sink, _) in query.iter_mut().filter(|(_s, d)| **d == Dsp::Triangle) {
+            sink.toggle_mute();
         }
     }
 }

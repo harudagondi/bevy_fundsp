@@ -31,7 +31,7 @@
 
 use {
     backend::{Backend, DefaultBackend},
-    bevy::prelude::{AddAsset, App, Plugin},
+    bevy::prelude::{App, Plugin},
     dsp_graph::DspGraph,
     dsp_manager::DspManager,
     dsp_source::{DspSource, SourceType},
@@ -88,8 +88,7 @@ impl Default for DspPlugin {
 
 impl Plugin for DspPlugin {
     fn build(&self, app: &mut App) {
-        app.insert_resource(DspManager::new(self.sample_rate))
-            .add_asset::<DspSource>();
+        app.insert_resource(DspManager::new(self.sample_rate));
 
         DefaultBackend::init_app(app);
     }
@@ -110,7 +109,7 @@ pub trait DspAppExt {
     ///     .add_dsp_source(a_simple_440hz_sine_wave, SourceType::Dynamic)
     ///     .run();
     ///
-    /// fn a_simple_440hz_sine_wave() -> impl AudioUnit32 {
+    /// fn a_simple_440hz_sine_wave() -> impl AudioUnit {
     ///     sine_hz(440.0)
     /// }
     /// ```
@@ -119,7 +118,7 @@ pub trait DspAppExt {
 
 impl DspAppExt for App {
     fn add_dsp_source<D: DspGraph>(&mut self, dsp_graph: D, source_type: SourceType) -> &mut Self {
-        let mut dsp_manager = self.world.resource_mut::<DspManager>();
+        let mut dsp_manager = self.world_mut().resource_mut::<DspManager>();
 
         dsp_manager.add_graph(dsp_graph, source_type);
 
@@ -143,13 +142,13 @@ fn default_sample_rate() -> f32 {
 
     #[allow(clippy::cast_precision_loss)]
     {
-        default_config.sample_rate().0 as f32
+        default_config.sample_rate() as f32
     }
 }
 
 #[cfg(test)]
 fn default_sample_rate() -> f32 {
-    bevy::log::warn!("This is in test mode!");
+    bevy_log::warn!("This is in test mode!");
     44100.0
 }
 

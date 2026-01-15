@@ -6,9 +6,9 @@ use {
         dsp_source::{DspSource, SourceType},
         DEFAULT_SAMPLE_RATE,
     },
+    bevy_platform::collections::HashMap,
     bevy::{
         prelude::{default, Resource},
-        utils::HashMap,
     },
     uuid::Uuid,
 };
