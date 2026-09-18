@@ -4,12 +4,11 @@
 
 A third party Bevy plugin that integrates [FunDSP] into [Bevy].
 
-`bevy_fundsp` supports integration for `bevy_audio`, [`bevy_kira_audio`], and `bevy_oddio`.
+`bevy_fundsp` supports integration for `bevy_audio` and [`bevy_kira_audio`].
 
 [FunDSP]: https://github.com/SamiPerttu/fundsp
 [Bevy]: https://github.com/bevyengine/bevy
 [`bevy_kira_audio`]: https://github.com/NiklasEi/bevy_kira_audio
-[`bevy_oddio`]: https://github.com/harudagondi/bevy_oddio
 
 ⚠ **WARNING: Lower your volume before testing your sounds!** ⚠
 
@@ -32,7 +31,7 @@ fn main() {
         .run();
 }
 
-fn white_noise() -> impl AudioUnit32 {
+fn white_noise() -> impl AudioUnit {
     white() >> split::<U2>() * 0.2
 }
 
@@ -59,7 +58,16 @@ fn play_noise(
 
 | `bevy_fundsp` | `bevy` | `bevy_kira_audio` | `bevy_oddio` | `fundsp` |
 | ------------- | ------ | ----------------- | ------------ | -------- |
-| bevy_main     | main   | bevy_main         | bevy_main    | main     |
+| 0.12.0        | 0.19   | 0.26              |              | 0.20     |
+| 0.11.0        | 0.18   | 0.25              |              | 0.20     |
+| 0.10.0        | 0.17   | 0.24              |              | 0.20     |
+| 0.9.0         | 0.16   | 0.23              |              | 0.20     |
+| 0.8.0         | 0.15   | 0.21              |              | 0.20     |
+| 0.7.0         | 0.14   | 0.20              |              | 0.20     |
+| 0.6.0         | 0.13   | 0.19              |              | 0.20     |
+| 0.5.0         | 0.12   | 0.18              |              | 0.20     |
+| 0.4.1         | 0.11   | 0.17              | 0.5          | 0.20     |
+| 0.4.0         | 0.11   | 0.16              | 0.5          | 0.15     |
 | 0.3.0         | 0.10   | 0.15              | 0.4          | 0.12     |
 | 0.2.0         | 0.9    | 0.13              | 0.3          | 0.9      |
 | 0.1.0         | 0.8    | 0.11              |              | 0.6      |

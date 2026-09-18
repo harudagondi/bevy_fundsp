@@ -11,7 +11,7 @@ fn main() {
         .run();
 }
 
-fn white_noise() -> impl AudioUnit32 {
+fn white_noise() -> impl AudioUnit {
     white() >> split::<U2>() * 0.2
 }
 
@@ -25,8 +25,5 @@ fn play_noise(
             .get_graph(white_noise)
             .unwrap_or_else(|| panic!("DSP source not found!")),
     );
-    commands.spawn(AudioSourceBundle {
-        source,
-        ..default()
-    });
+    commands.spawn(AudioPlayer { 0: source });
 }

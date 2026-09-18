@@ -1,13 +1,13 @@
 //! Module for the [`DspGraph`] trait.
 
-use {fundsp::prelude::AudioUnit32, uuid::Uuid};
+use {fundsp::audiounit::AudioUnit, uuid::Uuid};
 
 /// Trait for generating DSP sources.
 ///
 /// This is the public interface for registering custom DSP graphs.
 ///
 /// Currently, this is only implemented for functions
-/// that implement `Fn() -> impl AudioUnit32`.
+/// that implement `Fn() -> impl AudioUnit`.
 ///
 /// If parameterless functions isn't enough for your usecase,
 /// you can implement your own custom type.
@@ -23,20 +23,20 @@ pub trait DspGraph: Send + Sync + 'static {
     fn id(&self) -> Uuid;
 
     /// Generate a DSP graph.
-    fn generate_graph(&self) -> Box<dyn AudioUnit32>;
+    fn generate_graph(&self) -> Box<dyn AudioUnit>;
 }
 
 impl<F, Au> DspGraph for F
 where
     F: Send + Sync + 'static + Fn() -> Au,
-    Au: AudioUnit32 + 'static,
+    Au: AudioUnit + 'static,
 {
     fn id(&self) -> Uuid {
         // TODO: This should be based on its `TypeId`
         Uuid::new_v5(&Uuid::NAMESPACE_OID, std::any::type_name::<F>().as_bytes())
     }
 
-    fn generate_graph(&self) -> Box<dyn AudioUnit32> {
+    fn generate_graph(&self) -> Box<dyn AudioUnit> {
         Box::new(self())
     }
 }

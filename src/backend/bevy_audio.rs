@@ -4,9 +4,10 @@ use {
     super::Backend,
     crate::dsp_source::{DspSource, IterMono},
     bevy::{
-        audio::AddAudioSource,
+        audio::{AddAudioSource, Source},
         prelude::{App, AudioSource, Decodable},
     },
+    std::num::{NonZeroU16, NonZeroU32},
 };
 
 /// The backend for `bevy_audio`.
@@ -15,25 +16,25 @@ pub struct BevyAudioBackend;
 
 impl Decodable for DspSource {
     type Decoder = IterMono;
-    type DecoderItem = f32;
+    // type DecoderItem = f32;
 
     fn decoder(&self) -> Self::Decoder {
         self.clone().into_iter().into_mono()
     }
 }
 
-impl rodio::Source for IterMono {
-    fn current_frame_len(&self) -> Option<usize> {
+impl Source for IterMono {
+    fn current_span_len(&self) -> Option<usize> {
         None
     }
 
-    fn channels(&self) -> u16 {
-        1
+    fn channels(&self) -> NonZeroU16 {
+        NonZeroU16::new(1).unwrap()
     }
 
     #[allow(clippy::cast_sign_loss, clippy::cast_possible_truncation)]
-    fn sample_rate(&self) -> u32 {
-        self.0.sample_rate as u32
+    fn sample_rate(&self) -> NonZeroU32 {
+        NonZeroU32::new(self.0.sample_rate as u32).unwrap()
     }
 
     fn total_duration(&self) -> Option<std::time::Duration> {

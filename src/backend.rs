@@ -10,21 +10,15 @@ use {
 pub mod bevy_audio;
 #[cfg(feature = "kira")]
 pub mod kira;
-#[cfg(feature = "oddio")]
-pub mod oddio;
 
 /// The default backend.
 #[allow(clippy::module_name_repetitions)]
-#[cfg(feature = "bevy_audio")]
+#[cfg(all(feature = "bevy_audio", not(feature = "kira")))]
 pub type DefaultBackend = bevy_audio::BevyAudioBackend;
 /// The default backend.
 #[allow(clippy::module_name_repetitions)]
 #[cfg(feature = "kira")]
 pub type DefaultBackend = kira::KiraBackend;
-/// The default backend.
-#[allow(clippy::module_name_repetitions)]
-#[cfg(feature = "oddio")]
-pub type DefaultBackend = oddio::OddioBackend;
 
 /// The backend trait used to convert [`DspSource`] into its concrete type.
 pub trait Backend: Send + Sync + 'static {

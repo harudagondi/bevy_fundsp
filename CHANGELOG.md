@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-rc.1] - 10-05-2025
+
+- Updated fundsp to 0.20
+- Updated bevy_kira_audio to 0.17
+
 ## [0.4.0] - 17-08-2023
 
 Updated bevy and other crate dependencies.

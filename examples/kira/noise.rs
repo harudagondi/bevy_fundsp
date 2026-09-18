@@ -12,12 +12,12 @@ fn main() {
         .run();
 }
 
-fn white_noise() -> impl AudioUnit32 {
+fn white_noise() -> impl AudioUnit {
     white() >> split::<U2>() * 0.2
 }
 
 fn play_noise(
-    mut assets: ResMut<Assets<AudioSource>>,
+    mut assets: ResMut<Assets<bevy_kira_audio::AudioSource>>,
     dsp_manager: Res<DspManager>,
     audio: Res<Audio>,
 ) {
